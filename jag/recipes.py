@@ -21,9 +21,7 @@ def default_config_path():
     prefix = Path(sysconfig.get_path("data"))
     candidates = (
         root / "configs/train/jag.json",
-        root / "configs/train/groundingjev.json",
         prefix / "share/jag/configs/train/jag.json",
-        prefix / "share/groundingjev/configs/train/groundingjev.json",
     )
     for candidate in candidates:
         if candidate.is_file():

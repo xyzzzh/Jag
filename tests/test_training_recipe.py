@@ -14,8 +14,8 @@ from unittest.mock import patch
 import torch
 from transformers import get_scheduler
 
-from groundingjev.recipes import default_config_path, load_recipe, recipe_fingerprint, stage_schedule
-from groundingjev.trainer import GroundingTrainer, make_training_arguments
+from jag.recipes import default_config_path, load_recipe, recipe_fingerprint, stage_schedule
+from jag.trainer import GroundingTrainer, make_training_arguments
 from train import parse_args
 
 
@@ -46,15 +46,15 @@ class RecipeTests(unittest.TestCase):
     def test_config_location_prefers_checkout_then_installed_data_and_ignores_cwd(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
-            package = root / "checkout/groundingjev/recipes.py"
+            package = root / "checkout/jag/recipes.py"
             checkout = root / "checkout/configs/train/jag.json"
             installed = root / "prefix/share/jag/configs/train/jag.json"
             rogue = root / "cwd/configs/train/jag.json"
             for path in (checkout, installed, rogue):
                 path.parent.mkdir(parents=True)
                 path.write_text(CONFIG.read_text())
-            with patch("groundingjev.recipes.__file__", str(package)), \
-                    patch("groundingjev.recipes.sysconfig.get_path", return_value=str(root / "prefix")), \
+            with patch("jag.recipes.__file__", str(package)), \
+                    patch("jag.recipes.sysconfig.get_path", return_value=str(root / "prefix")), \
                     chdir(root / "cwd"):
                 self.assertEqual(default_config_path(), checkout)
                 checkout.unlink()
@@ -89,7 +89,7 @@ class RecipeTests(unittest.TestCase):
                 args = make_training_arguments(directory, microbatch=2, accumulation=12, stage=stage,
                                                planned_steps=steps, use_cpu=True, workers=0)
                 model = SimpleNamespace(config=SimpleNamespace(stage=stage))
-                with patch("groundingjev.trainer.Trainer.__init__", return_value=None):
+                with patch("jag.trainer.Trainer.__init__", return_value=None):
                     trainer = GroundingTrainer(model=model, args=args, data_collator=lambda rows: rows)
                 rates = dict(recipe["joint_learning_rates"])
                 if stage == "head":

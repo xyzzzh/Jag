@@ -10,11 +10,11 @@ from unittest.mock import patch
 from PIL import Image
 import torch
 
-from groundingjev.evaluate_batched import (
+from jag.evaluate_batched import (
     ReplayAPI, ReplayPredictor, cached_content, load_cache, precompute, prepare_records,
     validate_manifest, main,
 )
-from groundingjev.evaluation import checkpoint_manifest, run_evaluation
+from jag.evaluation import checkpoint_manifest, run_evaluation
 
 
 def fixture(root, count=3):
@@ -233,10 +233,10 @@ class BatchedEvaluationTests(unittest.TestCase):
             manifest = checkpoint_manifest(checkpoint, jsonl, 262144, 2048)
             manifest_path = root / "real-manifest.json"
             manifest_path.write_text(json.dumps(manifest))
-            model = "groundingjev-" + manifest["fingerprint"][:12]
+            model = "jag-" + manifest["fingerprint"][:12]
             cache = root / "legacy.jsonl"
             cache.write_text("".join(json.dumps(legacy(record, model=model)) + "\n" for record in records))
-            arguments = ["evaluate_batched", "--model-kind", "groundingjev", "--checkpoint", str(checkpoint),
+            arguments = ["evaluate_batched", "--model-kind", "jag", "--checkpoint", str(checkpoint),
                          "--jsonl", str(jsonl), "--output", str(root / "runs"), "--device", "cpu",
                          "--resume-predictions", str(cache), "--resume-manifest", str(manifest_path)]
             with patch("sys.argv", arguments):

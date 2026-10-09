@@ -38,11 +38,6 @@ def read_environment(path):
 
 def launch(arguments):
     environment = read_environment(ROOT / ".env")
-    # Existing local environments remain usable after the public project rename.
-    for key, value in list(environment.items()):
-        if key.startswith("GROUNDINGJEV_"):
-            environment.setdefault("JAG_" + key[len("GROUNDINGJEV_"):], value)
-    arguments = ["jag" if value == "groundingjev" else value for value in arguments]
     evaluation = bool(arguments and arguments[0] == "--eval")
     if evaluation:
         arguments = arguments[1:]
@@ -60,9 +55,6 @@ def launch(arguments):
     environment.setdefault("JAG_UID", str(os.getuid()))
     environment.setdefault("JAG_GID", str(os.getgid()))
     environment.setdefault("JAG_NPROC_PER_NODE", str(len(training_ids)))
-    if environment.get("SWANLAB_API_KEY_FILE", "").startswith("/workspace/GroundingJev/"):
-        environment["SWANLAB_API_KEY_FILE"] = environment["SWANLAB_API_KEY_FILE"].replace(
-            "/workspace/GroundingJev/", "/workspace/Jag/", 1)
     defaults = {
         "REFCOCO_ANNOTATIONS_DIR": "data/refcoco",
         "REFCOCO_IMAGES_DIR": "data/coco/train2014",

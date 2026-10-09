@@ -25,24 +25,37 @@
     if (event.matches) closeMenu();
   });
 
-  const copyButton = document.querySelector('[data-copy]');
-  copyButton.addEventListener('click', async () => {
-    const text = document.getElementById(copyButton.dataset.copy).textContent;
+  document.querySelectorAll('[data-copy]').forEach(copyButton => {
     const label = copyButton.querySelector('[data-copy-label]');
-    const status = document.querySelector('.copy-status');
-    try {
-      await navigator.clipboard.writeText(text);
-      label.textContent = 'Copied';
-      status.textContent = 'BibTeX copied to clipboard.';
-      window.setTimeout(() => { label.textContent = 'Copy BibTeX'; }, 2500);
-    } catch {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(document.getElementById(copyButton.dataset.copy));
-      selection.removeAllRanges();
-      selection.addRange(range);
-      label.textContent = 'Select & copy';
-      status.textContent = 'The citation is selected. Use your device’s copy command.';
-    }
+    const originalLabel = label.textContent;
+    let resetTimer;
+    copyButton.addEventListener('click', async () => {
+      const target = document.getElementById(copyButton.dataset.copy);
+      const text = target.textContent.trim();
+      const status = copyButton.parentElement.querySelector('.copy-status');
+      const name = copyButton.dataset.copyName || 'Text';
+      window.clearTimeout(resetTimer);
+      try {
+        await navigator.clipboard.writeText(text);
+        label.textContent = 'Copied';
+        status.textContent = `${name} copied to clipboard.`;
+        resetTimer = window.setTimeout(() => { label.textContent = originalLabel; }, 2500);
+      } catch {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        if (document.execCommand('copy')) {
+          label.textContent = 'Copied';
+          status.textContent = `${name} copied to clipboard.`;
+          selection.removeAllRanges();
+          resetTimer = window.setTimeout(() => { label.textContent = originalLabel; }, 2500);
+        } else {
+          label.textContent = 'Select & copy';
+          status.textContent = `The ${name.toLowerCase()} is selected. Use your device’s copy command.`;
+        }
+      }
+    });
   });
 })();

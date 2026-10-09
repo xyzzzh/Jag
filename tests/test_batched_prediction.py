@@ -10,8 +10,8 @@ import torch
 from torch import nn
 from transformers import GenerationConfig
 
-from groundingjev.base_predict import BaseGroundingPredictor
-from groundingjev.predict import GroundingPredictor
+from jag.base_predict import BaseGroundingPredictor
+from jag.predict import GroundingPredictor
 
 
 class BatchProcessor:

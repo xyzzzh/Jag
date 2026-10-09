@@ -11,9 +11,9 @@ from PIL import Image
 import torch
 from torch import nn
 
-from groundingjev.data import GroundingCollator
-from groundingjev.evaluation import GroundingJevAPI, run_evaluation, score_prediction
-from groundingjev.predict import GroundingPredictor, inference_inputs, prediction_to_result
+from jag.data import GroundingCollator
+from jag.evaluation import JagAPI, run_evaluation, score_prediction
+from jag.predict import GroundingPredictor, inference_inputs, prediction_to_result
 
 
 class RecordingProcessor:
@@ -116,7 +116,7 @@ class EvaluationTests(unittest.TestCase):
             source = directory / "eval.jsonl"
             source.write_text("".join(json.dumps(item) + "\n" for item in records))
             predictor = MockPredictor()
-            result = run_evaluation(source, GroundingJevAPI("groundingjev-cpu-test", predictor=predictor),
+            result = run_evaluation(source, JagAPI("jag-cpu-test", predictor=predictor),
                                     directory / "evalscope", subset="testA")
             self.assertEqual(len(predictor.requests), 2)
             self.assertEqual({request[1] for request in predictor.requests}, {"correct case", "failed case"})
@@ -132,8 +132,8 @@ class EvaluationTests(unittest.TestCase):
             for metric in metrics:
                 self.assertAlmostEqual(metric["score"], .5, places=5)
                 self.assertEqual(metric["num"], 2)
-            if os.environ.get("GROUNDINGJEV_EVAL_TEST_REPORT"):
-                report = Path(os.environ["GROUNDINGJEV_EVAL_TEST_REPORT"])
+            if os.environ.get("JAG_EVAL_TEST_REPORT"):
+                report = Path(os.environ["JAG_EVAL_TEST_REPORT"])
                 report.parent.mkdir(parents=True, exist_ok=True)
                 report.write_text(json.dumps(payload, indent=2) + "\n")
 

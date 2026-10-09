@@ -14,19 +14,19 @@ from rendering import predict_and_draw
 
 
 MODEL_ID = "xyzzzh/Jag"
-MODEL_REVISION = "20637a50e0c1d84c278ed2a18aeae3c2e7fef971"
-checkpoint = os.environ.get("JAG_MODEL_DIR") or os.environ.get("GROUNDINGJEV_CHECKPOINT") or snapshot_download(
+MODEL_REVISION = "da168ef40db7fc5c9a3b6aaee50554ea9d28f256"
+checkpoint = os.environ.get("JAG_MODEL_DIR") or snapshot_download(
     MODEL_ID,
     revision=MODEL_REVISION,
     allow_patterns=[
         "config.json", "model.safetensors", "processor_config.json",
         "tokenizer.json", "tokenizer_config.json", "chat_template.jinja",
-        "groundingjev/*.py",
+        "jag/*.py",
     ],
 )
 sys.path.insert(0, str(Path(checkpoint).resolve()))
 
-from groundingjev.predict import GroundingPredictor
+from jag.predict import GroundingPredictor
 
 
 # ZeroGPU requires the model's CUDA placement during module initialization.

@@ -40,17 +40,17 @@ class GroundingTemplate(Template):
 
 def attach_swift_metadata(model, processor, model_dir, max_length=2048):
     metadata = ModelMeta(
-        model_type="groundingjev", model_groups=[], template="groundingjev",
+        model_type="jag", model_groups=[], template="jag",
         is_multimodal=True, task_type="causal_lm",
-        architectures=["GroundingJevModel"], additional_saved_files=[],
+        architectures=["JagModel"], additional_saved_files=[],
     )
     metadata.model_arch = MultiModelKeys(
-        arch_name="groundingjev", language_model="backbone.language_model",
+        arch_name="jag", language_model="backbone.language_model",
         vision_tower="backbone.visual", aligner="backbone.visual.merger",
         embedding="backbone.language_model.embed_tokens",
     )
     information = ModelInfo(
-        model_type="groundingjev", model_dir=str(model_dir), torch_dtype=torch.float32,
+        model_type="jag", model_dir=str(model_dir), torch_dtype=torch.float32,
         max_model_len=max_length, quant_method=None, quant_bits=None,
         is_multimodal=True, config=model.config, task_type="causal_lm",
     )
@@ -64,7 +64,7 @@ def attach_swift_metadata(model, processor, model_dir, max_length=2048):
     )
     template = GroundingTemplate(
         processor, TemplateMeta(
-            template_type="groundingjev", prefix=[], prompt=["{{QUERY}}"],
+            template_type="jag", prefix=[], prompt=["{{QUERY}}"],
             chat_sep=[], suffix=[],
         ), max_length=max_length, remove_unused_columns=False,
         padding_free=False, sequence_parallel_size=1, enable_thinking=False,
@@ -128,7 +128,7 @@ class GroundingOptimizer(OptimizerCallback):
         trainer.lr_scheduler = self.create_scheduler(num_training_steps, trainer.optimizer)
 
 
-optimizers_map["groundingjev"] = GroundingOptimizer
+optimizers_map["jag"] = GroundingOptimizer
 
 
 class GroundingBatchSampler:
@@ -182,8 +182,8 @@ class GroundingTrainer(Trainer):
         self.grounding_callbacks = list(callbacks or [])
         self.run_config = run_config or {}
         training_args = kwargs.get("args", args[1] if len(args) > 1 else None)
-        recipe = getattr(training_args, "_groundingjev_recipe", None)
-        stage = getattr(training_args, "_groundingjev_stage", None)
+        recipe = getattr(training_args, "_jag_recipe", None)
+        stage = getattr(training_args, "_jag_stage", None)
         if recipe is None or stage not in {"head", "joint"}:
             raise ValueError("GroundingTrainer requires explicit args from make_training_arguments(..., stage=...)")
         recipe = validate_recipe(recipe)
@@ -290,14 +290,14 @@ class GroundingTrainer(Trainer):
         self._save_model(str(output_dir), state_dict)
         self.template.processor.save_pretrained(output_dir)
         torch.save(self.args, output_dir / "training_args.bin")
-        write_json(output_dir / "groundingjev_run_config.json", self.run_config)
+        write_json(output_dir / "jag_run_config.json", self.run_config)
 
     def _save_checkpoint(self, model, trial, *args, **kwargs):
         super()._save_checkpoint(model, trial, *args, **kwargs)
         if self.is_world_process_zero():
             path = Path(self.args.output_dir) / f"checkpoint-{self.state.global_step}"
             write_json(path / "sampler_state.json", {
-                "sampler": "groundingjev.trainer.GroundingBatchSampler", "data_seed": self.args.data_seed,
+                "sampler": "jag.trainer.GroundingBatchSampler", "data_seed": self.args.data_seed,
                 "epoch": self.state.epoch, "global_step": self.state.global_step,
                 "world_size": self.args.world_size,
                 "microbatch": self.args.per_device_train_batch_size,
@@ -321,7 +321,7 @@ def make_training_arguments(output_dir, *, microbatch, accumulation, stage, head
         gradient_accumulation_steps=accumulation,
         num_train_epochs=joint_epochs, max_steps=head_steps if stage == "head" else max_steps,
         learning_rate=recipe["head_learning_rate"] if stage == "head" else recipe["joint_learning_rates"]["language"],
-        optimizer="groundingjev", optim="adamw_torch", weight_decay=recipe["weight_decay"],
+        optimizer="jag", optim="adamw_torch", weight_decay=recipe["weight_decay"],
         adam_beta1=recipe["adam_betas"][0], adam_beta2=recipe["adam_betas"][1],
         adam_epsilon=recipe["adam_epsilon"],
         lr_scheduler_type=recipe[f"{stage}_scheduler"], **warmup,
@@ -340,6 +340,6 @@ def make_training_arguments(output_dir, *, microbatch, accumulation, stage, head
         resume_from_checkpoint=resume, ignore_data_skip=False,
         restore_callback_states_from_checkpoint=True, disable_tqdm=True,
     )
-    arguments._groundingjev_recipe = validate_recipe(recipe)
-    arguments._groundingjev_stage = stage
+    arguments._jag_recipe = validate_recipe(recipe)
+    arguments._jag_stage = stage
     return arguments

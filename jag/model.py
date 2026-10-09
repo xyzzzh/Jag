@@ -10,8 +10,8 @@ from transformers.utils import ModelOutput
 from .geometry import bbox_loss
 
 
-class GroundingJevConfig(PretrainedConfig):
-    model_type = "groundingjev"
+class JagConfig(PretrainedConfig):
+    model_type = "jag"
 
     def __init__(self, backbone_config=None, head_hidden_size=512, stage="head",
                  l1_weight=5.0, giou_weight=2.0, backbone_attn_implementation="sdpa",
@@ -31,7 +31,7 @@ class GroundingJevConfig(PretrainedConfig):
 
 
 @dataclass
-class GroundingJevOutput(ModelOutput):
+class JagOutput(ModelOutput):
     loss: torch.Tensor | None = None
     logits: torch.Tensor | None = None
     loss_l1: torch.Tensor | None = None
@@ -50,15 +50,15 @@ def last_valid_pool(hidden: torch.Tensor, attention_mask: torch.Tensor) -> torch
     return hidden[torch.arange(hidden.shape[0], device=hidden.device), last]
 
 
-class GroundingJevModel(PreTrainedModel):
-    config_class = GroundingJevConfig
+class JagModel(PreTrainedModel):
+    config_class = JagConfig
     base_model_prefix = "backbone"
     supports_gradient_checkpointing = True
     _supports_sdpa = True
     _no_split_modules = ["Qwen3_5DecoderLayer", "Qwen3_5VisionBlock"]
     _keep_in_fp32_modules = ["bbox_head"]
 
-    def __init__(self, config: GroundingJevConfig, backbone=None):
+    def __init__(self, config: JagConfig, backbone=None):
         super().__init__(config)
         if backbone is None:
             if not config.backbone_config:
@@ -94,7 +94,7 @@ class GroundingJevModel(PreTrainedModel):
             raise RuntimeError(f"Pretrained backbone was not loaded exactly: {issues}")
         backbone = container.model
         del container
-        config = GroundingJevConfig(
+        config = JagConfig(
             backbone_config=backbone.config.to_dict(), stage=stage,
             head_hidden_size=hidden_dim, backbone_attn_implementation=attn_implementation,
             base_model_path=str(model_dir),
@@ -166,6 +166,6 @@ class GroundingJevModel(PreTrainedModel):
                 loss, loss_l1, loss_giou = bbox_loss(
                     logits, bbox_targets.to(device=logits.device, dtype=torch.float32),
                     self.config.l1_weight, self.config.giou_weight)
-        output = GroundingJevOutput(loss=loss, logits=logits,
+        output = JagOutput(loss=loss, logits=logits,
                                     loss_l1=loss_l1, loss_giou=loss_giou)
         return output if return_dict else output.to_tuple()

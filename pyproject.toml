@@ -24,7 +24,7 @@ Model = "https://huggingface.co/xyzzzh/Jag"
 Demo = "https://huggingface.co/spaces/xyzzzh/Jag"
 
 [tool.setuptools.packages.find]
-include = ["groundingjev*"]
+include = ["jag*"]
 
 [tool.setuptools.data-files]
 "share/jag/configs/train" = ["configs/train/jag.json"]

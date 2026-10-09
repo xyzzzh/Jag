@@ -32,7 +32,7 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('xyz
 cd Jag
 python -m pip install -e .
 
-python -m groundingjev.predict \
+python -m jag.predict \
   --checkpoint . \
   --image /path/to/image.jpg \
   --expression 'the person wearing a red shirt' \
@@ -40,7 +40,7 @@ python -m groundingjev.predict \
   --weight-dtype bf16
 ```
 
-The `bbox_xyxy` field contains `[x1, y1, x2, y2]` in original-image pixels. Add `--output prediction.json` to save the result. The `groundingjev` Python package and serialized model class names are retained for compatibility. The `bf16` option stores the backbone in BF16 and keeps the regression head in FP32; use `--weight-dtype fp32` for the full-test accuracy configuration.
+The `bbox_xyxy` field contains `[x1, y1, x2, y2]` in original-image pixels. Add `--output prediction.json` to save the result. The `bf16` option stores the backbone in BF16 and keeps the regression head in FP32; use `--weight-dtype fp32` for the full-test accuracy configuration.
 
 ## Grounding accuracy
 

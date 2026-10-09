@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import time
 
-from .evaluation import GroundingJevAPI, checkpoint_manifest, run_evaluation
+from .evaluation import JagAPI, checkpoint_manifest, run_evaluation
 from .resources import configure_cuda_memory
 
 
@@ -34,7 +34,7 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     (output / "evaluation_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     (output / "resource_limits.json").write_text(json.dumps(resources, indent=2) + "\n")
-    api = GroundingJevAPI(model_name="groundingjev-" + manifest["fingerprint"][:12],
+    api = JagAPI(model_name="jag-" + manifest["fingerprint"][:12],
                          checkpoint=args.checkpoint, processor_path=args.processor,
                          device=args.device, max_pixels=args.max_pixels, max_length=args.max_length)
     run_evaluation(args.jsonl, api, output, subset=args.subset, limit=args.limit)

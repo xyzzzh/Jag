@@ -43,18 +43,19 @@ def digest(path):
 def inference_config(config):
     """Export the direct last-token model without changing its tensor weights."""
     config = dict(config)
-    if config.get("model_type") == "groundingjev_research_direct":
+    if "prediction_mode" in config:
         if (config.get("prediction_mode") != "continuous"
                 or config.get("readout") != "last_valid"
-                or config.get("freeze_backbone") is not False):
+                or config.get("freeze_backbone") is not False
+                or config.get("backbone_config", {}).get("model_type") != "qwen3_5"):
             raise ValueError("Only the continuous last-token model supports the Jag inference export")
-        config["model_type"] = "groundingjev"
-        config["architectures"] = ["GroundingJevModel"]
+        config["model_type"] = "jag"
+        config["architectures"] = ["JagModel"]
         for key in ("prediction_mode", "readout", "readout_description", "freeze_backbone",
                     "num_coordinate_bins", "reg_token", "reg_token_id"):
             config.pop(key, None)
         config["keys_to_ignore_at_inference"] = ["loss_l1", "loss_giou"]
-    if config.get("model_type") != "groundingjev":
+    if config.get("model_type") != "jag":
         raise ValueError("Source is not a compatible Jag model")
     return sanitize_config(config)
 

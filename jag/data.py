@@ -48,7 +48,7 @@ class RefCOCODataset(Dataset):
             row = json.loads(self._handle.readline())
         except (ValueError, UnicodeError) as error:
             raise ValueError(f"Invalid JSON at {self.path}:{index + 1}") from error
-        row["_groundingjev_source_dir"] = self.image_root or str(self.path.parent)
+        row["_jag_source_dir"] = self.image_root or str(self.path.parent)
         return row
 
     def __getstate__(self):
@@ -122,7 +122,7 @@ class GroundingCollator:
                 raise ValueError("Jag expects exactly one original image per sample")
             image_path = Path(images[0])
             if not image_path.is_absolute():
-                image_path = Path(row.get("_groundingjev_source_dir", ".")) / image_path
+                image_path = Path(row.get("_jag_source_dir", ".")) / image_path
             with Image.open(image_path) as source:
                 image = source.convert("RGB")
             expression = referring_expression(row)

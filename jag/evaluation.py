@@ -19,7 +19,7 @@ from evalscope.metrics.semantics.catalog import METRIC_DEFINITIONS, MetricEntry
 from .data import RefCOCODataset, referring_expression, target_cxcywh
 
 
-BENCHMARK_NAME = "groundingjev_refcoco"
+BENCHMARK_NAME = "jag_refcoco"
 THRESHOLDS = (0.5, 0.75, 0.9)
 ACCURACY_KEYS = {0.5: "acc_05", 0.75: "acc_075", 0.9: "acc_09"}
 
@@ -70,11 +70,11 @@ def score_prediction(prediction, target_xyxy):
     return values
 
 
-@register_model_api("groundingjev")
-class GroundingJevAPI(ModelAPI):
+@register_model_api("jag")
+class JagAPI(ModelAPI):
     """EvalScope's `generate` interface performs a normal model forward only."""
 
-    def __init__(self, model_name="groundingjev", predictor=None, checkpoint=None,
+    def __init__(self, model_name="jag", predictor=None, checkpoint=None,
                  processor_path=None, device="cuda", max_pixels=262144, max_length=2048, **kwargs):
         super().__init__(model_name=model_name, **kwargs)
         if predictor is None:
@@ -118,7 +118,7 @@ class GroundingRefCOCOAdapter(DefaultDataAdapter):
     def load(self):
         path = self.extra_params.get("jsonl")
         if not path:
-            raise ValueError("dataset_args.groundingjev_refcoco.extra_params.jsonl is required")
+            raise ValueError("dataset_args.jag_refcoco.extra_params.jsonl is required")
         source = RefCOCODataset(path)
         count = len(source)
         if self.limit is not None:
@@ -129,7 +129,7 @@ class GroundingRefCOCOAdapter(DefaultDataAdapter):
         samples = []
         for index in range(count):
             record = source[index]
-            record["_groundingjev_sample_index"] = index
+            record["_jag_sample_index"] = index
             samples.append(self.record_to_sample(record))
         return DatasetDict({subset: MemoryDataset(samples, name=subset, location=str(source.path))}), None
 
@@ -138,7 +138,7 @@ class GroundingRefCOCOAdapter(DefaultDataAdapter):
             raise ValueError("Evaluation records require exactly one source image")
         image = Path(record["images"][0])
         if not image.is_absolute():
-            image = Path(record.get("_groundingjev_source_dir", ".")) / image
+            image = Path(record.get("_jag_source_dir", ".")) / image
         expression = referring_expression(record)
         target_cxcywh(record)  # Validate the annotation without a floating-point round trip.
         target = [float(value) / 1000.0 for value in record["solution"]["arguments"]["coordinate"]]
@@ -151,7 +151,7 @@ class GroundingRefCOCOAdapter(DefaultDataAdapter):
             image_error = f"{type(error).__name__}: {error}"
         request = json.dumps({"image": str(image), "expression": expression}, ensure_ascii=False)
         return Sample(
-            id=record.get("_groundingjev_sample_index"),
+            id=record.get("_jag_sample_index"),
             input=[ChatMessageUser(content=request)], target=json.dumps(target),
             metadata={"source_sample_id": record.get("sample_id"), "image": str(image),
                       "image_size": image_size, "image_error": image_error,

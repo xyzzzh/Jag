@@ -13,11 +13,11 @@ from PIL import Image
 import torch
 from torch import nn
 
-from groundingjev.benchmark import (GpuGuard, TimedModel, argument_parser, latency_summary,
+from jag.benchmark import (GpuGuard, TimedModel, argument_parser, latency_summary,
                                    model_weight_statistics, prepare_samples, selection_manifest,
                                    summarize_model, timed_prediction, canonical_gpu_uuid,
                                    discover_gpu, gpu_processes)
-from groundingjev.data import RefCOCODataset
+from jag.data import RefCOCODataset
 
 
 class FakeModel:
@@ -85,7 +85,7 @@ class BenchmarkTests(unittest.TestCase):
         return record
 
     def test_wrapper_times_generate_or_forward_without_ground_truth(self):
-        for key in ("base", "groundingjev"):
+        for key in ("base", "jag"):
             record = self.measured(key)
             self.assertAlmostEqual(record["end_to_end_ms"], 500)
             self.assertAlmostEqual(record["model_ms"], 200)
@@ -110,7 +110,7 @@ class BenchmarkTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Unexpected inference failure"):
             self.measured(result={"error": "CUDA out of memory"})
         with self.assertRaisesRegex(RuntimeError, "Unexpected inference failure"):
-            self.measured(key="groundingjev", result={"error": "bad forward", "raw_generation": "fake"})
+            self.measured(key="jag", result={"error": "bad forward", "raw_generation": "fake"})
 
         class BrokenModel(FakeModel):
             def generate(self, **kwargs):
@@ -139,10 +139,10 @@ class BenchmarkTests(unittest.TestCase):
     def test_torch_bare_uuid_is_normalized_for_nvidia_smi(self):
         bare = "56140a66-16f4-ccc5-2ed2-04d902ebdf02"
         canonical = "GPU-" + bare
-        with patch("groundingjev.benchmark.subprocess.run", return_value=SimpleNamespace(
+        with patch("jag.benchmark.subprocess.run", return_value=SimpleNamespace(
                 stdout=json.dumps({"uuid": bare, "device": "cuda:0", "name": "test GPU"}) + "\n")):
             self.assertEqual(discover_gpu("cuda:0")["uuid"], canonical)
-        with patch("groundingjev.benchmark.subprocess.run", return_value=SimpleNamespace(stdout="12345\n")) as run:
+        with patch("jag.benchmark.subprocess.run", return_value=SimpleNamespace(stdout="12345\n")) as run:
             self.assertEqual(gpu_processes(bare), [12345])
             self.assertEqual(run.call_args.args[0][1], "--id=" + canonical)
         self.assertEqual(canonical_gpu_uuid(canonical), canonical)

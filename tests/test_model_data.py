@@ -12,9 +12,9 @@ import torch
 from torch import nn
 from transformers import Qwen3_5Config
 
-from groundingjev.data import GroundingCollator, RefCOCODataset, referring_expression, target_cxcywh
-from groundingjev.geometry import aligned_iou_giou, bbox_loss, cxcywh_to_xyxy, xyxy_to_cxcywh
-from groundingjev.model import GroundingJevConfig, GroundingJevModel, last_valid_pool
+from jag.data import GroundingCollator, RefCOCODataset, referring_expression, target_cxcywh
+from jag.geometry import aligned_iou_giou, bbox_loss, cxcywh_to_xyxy, xyxy_to_cxcywh
+from jag.model import JagConfig, JagModel, last_valid_pool
 
 
 def _check_geometry_and_unclipped_boundary_gradients():
@@ -68,7 +68,7 @@ class DummyBackbone(nn.Module):
 
 def _check_forward_single_call_fp32_and_exact_trainable_groups(stage):
     backbone = DummyBackbone()
-    model = GroundingJevModel(GroundingJevConfig(head_hidden_size=4, stage=stage), backbone)
+    model = JagModel(JagConfig(head_hidden_size=4, stage=stage), backbone)
     inputs = dict(input_ids=torch.tensor([[1, 2, 3], [4, 5, 0]]),
                   attention_mask=torch.tensor([[1, 1, 1], [1, 1, 0]]),
                   pixel_values=torch.randn(2, 3), bbox_targets=torch.tensor([[.4, .4, .2, .2]] * 2))
@@ -152,14 +152,14 @@ def _check_complete_qwen_checkpoint_round_trip(tmp_path):
         vision_config=dict(depth=1, hidden_size=32, intermediate_size=64, num_heads=4,
                            out_hidden_size=32, num_position_embeddings=16),
         image_token_id=60, video_token_id=61, vision_start_token_id=62, vision_end_token_id=63)
-    model = GroundingJevModel(GroundingJevConfig(backbone_config=qwen.to_dict(),
+    model = JagModel(JagConfig(backbone_config=qwen.to_dict(),
                                                head_hidden_size=8, stage="joint"))
     model.eval()
     inputs = dict(input_ids=torch.tensor([[1, 2, 3]]), attention_mask=torch.ones(1, 3, dtype=torch.long))
     with torch.no_grad():
         before = model(**inputs).logits
     model.save_pretrained(tmp_path)
-    restored, info = GroundingJevModel.from_pretrained(tmp_path, output_loading_info=True)
+    restored, info = JagModel.from_pretrained(tmp_path, output_loading_info=True)
     assert not any(info.get(key) for key in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs"))
     restored.eval()
     assert restored.config.stage == "joint"

@@ -7,7 +7,7 @@ import unittest
 import torch
 from swift.dataloader import DataLoaderShard
 
-from groundingjev.trainer import GroundingBatchSampler
+from jag.trainer import GroundingBatchSampler
 
 
 def batches(size, batch_size, rank, *, world_size=2, epoch=0, skip=0):

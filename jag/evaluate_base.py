@@ -9,7 +9,7 @@ import time
 
 from .base_predict import (BaseGroundingPredictor, PARSER_VERSION, PROMPT_TEMPLATE,
                            generation_settings, prompt_sha256)
-from .evaluation import GroundingJevAPI, checkpoint_manifest, file_sha256, run_evaluation
+from .evaluation import JagAPI, checkpoint_manifest, file_sha256, run_evaluation
 
 
 def base_checkpoint_manifest(checkpoint, jsonl, max_pixels=262144, max_length=2048,
@@ -29,7 +29,7 @@ def base_checkpoint_manifest(checkpoint, jsonl, max_pixels=262144, max_length=20
         generation_config_sha256=hashlib.sha256(json.dumps(settings, sort_keys=True).encode()).hexdigest(),
         gpu_memory_gib=8.0 if gpu_memory_gib is None and memory_fraction is None else gpu_memory_gib,
         memory_fraction=memory_fraction,
-        scoring_protocol="groundingjev_refcoco:original-normalized-xyxy-iou:invalid-zero:clamp01:schema-1")
+        scoring_protocol="jag_refcoco:original-normalized-xyxy-iou:invalid-zero:clamp01:schema-1")
     manifest["fingerprint"] = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
     return manifest
 
@@ -68,7 +68,7 @@ def main():
     (output / "resource_limits.json").write_text(json.dumps(predictor.memory_status, indent=2) + "\n")
     (output / "resolved_generation_config.json").write_text(
         json.dumps(predictor.generation_config.to_dict(), indent=2) + "\n")
-    api = GroundingJevAPI(model_name="qwen35-base-" + manifest["fingerprint"][:12], predictor=predictor)
+    api = JagAPI(model_name="qwen35-base-" + manifest["fingerprint"][:12], predictor=predictor)
     run_evaluation(args.jsonl, api, output, subset=args.subset, limit=args.limit)
     stats = {"started_at": started_at, "finished_at": datetime.now(timezone.utc).isoformat(),
              "wall_seconds": time.monotonic() - started}

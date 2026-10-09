@@ -14,7 +14,7 @@ SPLITS = [
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("model", choices=["jag", "base", "groundingjev"])
+    parser.add_argument("model", choices=["jag", "base"])
     parser.add_argument("--checkpoint", default="/models/Jag")
     parser.add_argument("--base-model", default="/models/Qwen3.5-0.8B")
     parser.add_argument("--annotations", default="/workspace/datasets/RefCOCO/annotations")
@@ -30,11 +30,11 @@ def main():
         if not path.is_file():
             raise FileNotFoundError(f"Missing evaluation split: {path}")
     for dataset, subset in SPLITS:
-        model_kind = "base" if args.model == "base" else "groundingjev"
+        model_kind = "base" if args.model == "base" else "jag"
         output_name = "base" if args.model == "base" else "jag"
         checkpoint = args.base_model if args.model == "base" else args.checkpoint
         subprocess.run([
-            sys.executable, "-m", "groundingjev.evaluate_batched",
+            sys.executable, "-m", "jag.evaluate_batched",
             "--model-kind", model_kind, "--checkpoint", checkpoint,
             "--jsonl", str(Path(args.annotations) / f"{dataset}_{subset}_eval.jsonl"),
             "--subset", subset, "--output", str(Path(args.output) / output_name / f"{dataset}-{subset}"),

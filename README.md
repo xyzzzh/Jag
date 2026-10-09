@@ -10,7 +10,7 @@
 
 </div>
 
-![Jag architecture](assets/architecture.svg)
+![Jag framework](assets/architecture.png)
 
 ## Introduction
 

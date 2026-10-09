@@ -10,7 +10,7 @@
 
 </div>
 
-![Jag architecture](assets/architecture.svg)
+![Jag 框架](assets/architecture.png)
 
 ## 简介
 

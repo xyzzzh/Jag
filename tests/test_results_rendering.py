@@ -117,15 +117,15 @@ class ResultsRenderingTests(unittest.TestCase):
             annotations = Path(directory)
             for dataset, subset in evaluate_all.SPLITS:
                 (annotations / f"{dataset}_{subset}_eval.jsonl").write_text("{}\n")
-            for model in ("jag", "groundingjev", "base"):
+            for model in ("jag", "base"):
                 argv = ["evaluate_all.py", model, "--annotations", str(annotations)]
                 with patch("sys.argv", argv), patch.object(evaluate_all.subprocess, "run") as run:
                     evaluate_all.main()
                 self.assertEqual(run.call_count, 5)
                 for call in run.call_args_list:
                     arguments = call.args[0]
-                    self.assertIn("groundingjev.evaluate_batched", arguments)
-                    self.assertEqual(arguments[arguments.index("--model-kind") + 1], "base" if model == "base" else "groundingjev")
+                    self.assertIn("jag.evaluate_batched", arguments)
+                    self.assertEqual(arguments[arguments.index("--model-kind") + 1], "base" if model == "base" else "jag")
                     self.assertEqual(arguments[arguments.index("--batch-size") + 1], "64")
                     expected = "/models/Qwen3.5-0.8B" if model == "base" else "/models/Jag"
                     self.assertEqual(arguments[arguments.index("--checkpoint") + 1], expected)

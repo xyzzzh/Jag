@@ -22,7 +22,7 @@ def main():
     help_requested = "--help" in extras or "-h" in extras
     if stage != "head" and not help_requested and Path(args.export_output).exists() and not args.overwrite_export:
         raise FileExistsError("Export directory already exists; choose --export-output or explicitly use --overwrite-export")
-    count = int(os.environ.get("JAG_NPROC_PER_NODE", os.environ.get("GROUNDINGJEV_NPROC_PER_NODE", "1")))
+    count = int(os.environ.get("JAG_NPROC_PER_NODE", "1"))
     if count not in {1, 2, 4}:
         raise ValueError("Jag training supports 1, 2 or 4 processes")
     overrides = []

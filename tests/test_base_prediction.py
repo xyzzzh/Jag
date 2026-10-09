@@ -14,11 +14,11 @@ import torch
 from torch import nn
 from transformers import GenerationConfig
 
-from groundingjev.base_predict import (BaseGroundingPredictor, PROMPT_TEMPLATE,
+from jag.base_predict import (BaseGroundingPredictor, PROMPT_TEMPLATE,
                                        base_inference_inputs, generation_settings,
                                        parse_generated_box)
-from groundingjev.evaluate_base import argument_parser, base_checkpoint_manifest
-from groundingjev.evaluation import GroundingJevAPI, run_evaluation, score_prediction
+from jag.evaluate_base import argument_parser, base_checkpoint_manifest
+from jag.evaluation import JagAPI, run_evaluation, score_prediction
 
 
 class RecordingProcessor:
@@ -144,11 +144,11 @@ class BasePredictionTests(unittest.TestCase):
     def test_memory_cap_precedes_model_load_and_loads_original_bf16_model(self):
         events = []
         model, processor = GeneratingModel(), RecordingProcessor()
-        with patch("groundingjev.base_predict.configure_cuda_memory",
+        with patch("jag.base_predict.configure_cuda_memory",
                    side_effect=lambda *args: events.append(("memory", args)) or {"capped": True}), \
-             patch("groundingjev.base_predict.Qwen3_5ForConditionalGeneration.from_pretrained",
+             patch("jag.base_predict.Qwen3_5ForConditionalGeneration.from_pretrained",
                    side_effect=lambda *args, **kwargs: events.append(("model", kwargs)) or (model, {})), \
-             patch("groundingjev.base_predict.AutoProcessor.from_pretrained", return_value=processor):
+             patch("jag.base_predict.AutoProcessor.from_pretrained", return_value=processor):
             predictor = BaseGroundingPredictor.from_checkpoint("original-qwen", device="cpu", gpu_memory_gib=8)
         self.assertEqual([event[0] for event in events], ["memory", "model"])
         self.assertEqual(events[0][1], ("cpu", 8, None))
@@ -203,7 +203,7 @@ class BasePredictionTests(unittest.TestCase):
                        for expression in ["cat", "bad case"]]
             source.write_text("".join(json.dumps(record) + "\n" for record in records))
             predictor = PredictionSequence()
-            run_evaluation(source, GroundingJevAPI("original-base-cpu-test", predictor=predictor),
+            run_evaluation(source, JagAPI("original-base-cpu-test", predictor=predictor),
                            directory / "eval", subset="testA")
             self.assertEqual({expression for _, expression in predictor.calls}, {"cat", "bad case"})
             report = json.loads(next((directory / "eval").glob("reports/**/*.json")).read_text())

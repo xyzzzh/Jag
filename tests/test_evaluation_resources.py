@@ -2,7 +2,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from groundingjev.resources import configure_cuda_memory
+from jag.resources import configure_cuda_memory
 
 
 class EvaluationResourceTests(unittest.TestCase):

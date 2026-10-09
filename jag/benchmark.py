@@ -159,7 +159,7 @@ def prepare_samples(source, indices):
             raise ValueError(f"Sample {index} must contain exactly one image")
         path = Path(row["images"][0])
         if not path.is_absolute():
-            path = Path(row.get("_groundingjev_source_dir", ".")) / path
+            path = Path(row.get("_jag_source_dir", ".")) / path
         target_cxcywh(row)
         result.append({"sample_index": index, "source_sample_id": row.get("sample_id"),
                        "image": str(path.resolve(strict=True)), "image_sha256": file_sha256(path),
@@ -331,7 +331,7 @@ def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
         summary = summarize_model(records)
         summary.update(
             weights=weights, resource_limits=resources, nvml_memory=sampler.report(),
-            autocast_dtype="bfloat16" if model_key == "groundingjev" else None,
+            autocast_dtype="bfloat16" if model_key == "jag" else None,
             allocated_bytes_after_warmup=baseline_allocated,
             reserved_bytes_after_warmup=baseline_reserved,
             peak_allocated_bytes=torch.cuda.max_memory_allocated(args.device),
@@ -348,7 +348,7 @@ def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
 
 
 def render_markdown(report):
-    base, groundingjev = report["models"]["base"], report["models"]["groundingjev"]
+    base, jag = report["models"]["base"], report["models"]["jag"]
     rows = [
         "# Base 与 Jag 配对性能测评", "",
         f"同一张 {report['gpu']['name']}（{report['gpu']['uuid']}）顺序运行，batch=1。"
@@ -364,26 +364,26 @@ def render_markdown(report):
         ("模型调用 P50（ms）", "model_latency_ms", "p50"),
         ("模型调用 P95（ms）", "model_latency_ms", "p95"),
     ]:
-        rows.append(f"| {title} | {base[field][subfield]:.3f} | {groundingjev[field][subfield]:.3f} |")
-    if all("nvml_memory" in model for model in (base, groundingjev)):
+        rows.append(f"| {title} | {base[field][subfield]:.3f} | {jag[field][subfield]:.3f} |")
+    if all("nvml_memory" in model for model in (base, jag)):
         rows.append(
             f"| 峰值 GPU 进程显存（GiB） | {base['nvml_memory']['peak_process_used_gib']:.3f} | "
-            f"{groundingjev['nvml_memory']['peak_process_used_gib']:.3f} |")
+            f"{jag['nvml_memory']['peak_process_used_gib']:.3f} |")
     rows.extend([
-        f"| 顺序处理速度（images/s） | {base['images_per_second']:.3f} | {groundingjev['images_per_second']:.3f} |",
-        f"| 峰值 allocated 显存（GiB） | {base['peak_allocated_bytes'] / 1024**3:.3f} | {groundingjev['peak_allocated_bytes'] / 1024**3:.3f} |",
-        f"| 峰值 reserved 显存（GiB） | {base['peak_reserved_bytes'] / 1024**3:.3f} | {groundingjev['peak_reserved_bytes'] / 1024**3:.3f} |",
-        f"| 本子集 mIoU | {base['subset_quality']['iou']:.4f} | {groundingjev['subset_quality']['iou']:.4f} |",
-        f"| 本子集 Acc@0.5 | {base['subset_quality']['acc_05']:.2%} | {groundingjev['subset_quality']['acc_05']:.2%} |",
-        f"| 无效输出数 | {base['diagnostics']['invalid_output_count']} | {groundingjev['diagnostics']['invalid_output_count']} |",
-        "", f"端到端平均延迟比（base ÷ groundingjev）：{report['speedups']['end_to_end_mean']:.3f}×；"
+        f"| 顺序处理速度（images/s） | {base['images_per_second']:.3f} | {jag['images_per_second']:.3f} |",
+        f"| 峰值 allocated 显存（GiB） | {base['peak_allocated_bytes'] / 1024**3:.3f} | {jag['peak_allocated_bytes'] / 1024**3:.3f} |",
+        f"| 峰值 reserved 显存（GiB） | {base['peak_reserved_bytes'] / 1024**3:.3f} | {jag['peak_reserved_bytes'] / 1024**3:.3f} |",
+        f"| 本子集 mIoU | {base['subset_quality']['iou']:.4f} | {jag['subset_quality']['iou']:.4f} |",
+        f"| 本子集 Acc@0.5 | {base['subset_quality']['acc_05']:.2%} | {jag['subset_quality']['acc_05']:.2%} |",
+        f"| 无效输出数 | {base['diagnostics']['invalid_output_count']} | {jag['diagnostics']['invalid_output_count']} |",
+        "", f"端到端平均延迟比（base ÷ jag）：{report['speedups']['end_to_end_mean']:.3f}×；"
         f"模型调用平均延迟比：{report['speedups']['model_only_mean']:.3f}×。", "",
         "端到端计时包含图片打开、预处理、输入传输、模型调用、解码及框结果处理。"
-        "模型计时覆盖 base 的完整 generate 和 groundingjev 的一次 forward。计时边界均同步 CUDA；"
+        "模型计时覆盖 base 的完整 generate 和 jag 的一次 forward。计时边界均同步 CUDA；"
         "权重加载、预热、进程检查及指标计算不计入延迟。速度按 1000 / 平均毫秒计算，表示 batch=1 顺序推理。", "",
         "base 使用 BF16 权重、固定提示词、关闭 thinking、贪心生成，最多 128 个新 token；"
         "Jag 权重精度和 BF16 自动混合精度设置记录在 benchmark.json 中。两者图像预算为 262144、最大输入长度为 2048。"
-        "图片在计时前统一校验 SHA，系统文件缓存可能已预热。固定顺序为 base 然后 groundingjev，未进行多轮顺序交叉实验。", "",
+        "图片在计时前统一校验 SHA，系统文件缓存可能已预热。固定顺序为 base 然后 jag，未进行多轮顺序交叉实验。", "",
         "无效框生成的完整延迟保留在分母中，并作为零 IoU；运行错误使性能测评失败。"
         "这里的 IoU 仅描述固定性能子集；正式质量结论使用完整测试集评测。", "",
         "样本索引、图片 SHA、原始预测、逐样本配对延迟、权重与数据指纹、显存及 GPU 进程审计见 benchmark.json。", "",
@@ -449,7 +449,7 @@ def main():
         manifests = {
             "base": base_checkpoint_manifest(args.base_model, args.jsonl, args.max_pixels, args.max_length,
                                              args.max_new_tokens, args.gpu_memory_gib),
-            "groundingjev": checkpoint_manifest(args.checkpoint, args.jsonl, args.max_pixels, args.max_length),
+            "jag": checkpoint_manifest(args.checkpoint, args.jsonl, args.max_pixels, args.max_length),
         }
         gpu = discover_gpu(args.device)
         guard = GpuGuard(gpu["uuid"])
@@ -461,7 +461,7 @@ def main():
         del probe
         torch.cuda.empty_cache()
         models, paired = {}, [dict(sample) for sample in measured]
-        for model_key in ("base", "groundingjev"):
+        for model_key in ("base", "jag"):
             summary, records = benchmark_model(model_key, args, warmup, measured, guard)
             models[model_key] = {**summary, "manifest": manifests[model_key]}
             for sample, record in zip(paired, records):
@@ -483,7 +483,7 @@ def main():
                         "num_samples": args.samples, **selection},
             "settings": {"max_pixels": args.max_pixels, "max_length": args.max_length,
                          "max_new_tokens": args.max_new_tokens, "batch_size": 1, "warmup": args.warmup,
-                         "seed": args.seed, "jag_weight_dtype": args.weight_dtype, "execution_order": ["base", "groundingjev"],
+                         "seed": args.seed, "jag_weight_dtype": args.weight_dtype, "execution_order": ["base", "jag"],
                          "timing_method": "cuda-synchronized-wall-clock", "model_loading_excluded": True,
                          "warmup_excluded": True, "e2e_includes_preprocessing": True,
                          "image_files_prehashed_before_timing": True, "gpu_guard_interval_samples": 16,
@@ -493,8 +493,8 @@ def main():
                            "allowed_gpu_pid": guard.allowed_pid, "observations": guard.observations},
             "models": models, "paired_samples": paired,
             "speedups": {
-                "end_to_end_mean": models["base"]["latency_ms"]["mean"] / models["groundingjev"]["latency_ms"]["mean"],
-                "model_only_mean": models["base"]["model_latency_ms"]["mean"] / models["groundingjev"]["model_latency_ms"]["mean"],
+                "end_to_end_mean": models["base"]["latency_ms"]["mean"] / models["jag"]["latency_ms"]["mean"],
+                "model_only_mean": models["base"]["model_latency_ms"]["mean"] / models["jag"]["model_latency_ms"]["mean"],
             },
         }
         (output / "benchmark.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")

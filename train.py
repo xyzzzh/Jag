@@ -14,10 +14,10 @@ from torch.utils.data import Subset
 from transformers import AutoProcessor, set_seed
 from transformers.trainer_utils import get_last_checkpoint
 
-from groundingjev.data import GroundingCollator, RefCOCODataset
-from groundingjev.model import GroundingJevModel
-from groundingjev.recipes import load_recipe, recipe_fingerprint, stage_schedule, validate_recipe
-from groundingjev.trainer import (
+from jag.data import GroundingCollator, RefCOCODataset
+from jag.model import JagModel
+from jag.recipes import load_recipe, recipe_fingerprint, stage_schedule, validate_recipe
+from jag.trainer import (
     GroundingTrainer, attach_swift_metadata, make_training_arguments, write_json,
 )
 
@@ -112,14 +112,14 @@ def resolve_resume(args):
 
 def validate_resume(checkpoint, config):
     required = ["config.json", "trainer_state.json", "optimizer.pt", "scheduler.pt",
-                "sampler_state.json", "groundingjev_run_config.json"]
+                "sampler_state.json", "jag_run_config.json"]
     world_size = config["world_size"]
     required += (["rng_state.pth"] if world_size == 1 else
                  [f"rng_state_{rank}.pth" for rank in range(world_size)])
     absent = [name for name in required if not (checkpoint / name).is_file()]
     if absent:
         raise ValueError(f"Incomplete resumable checkpoint {checkpoint}: missing {absent}")
-    previous = json.loads((checkpoint / "groundingjev_run_config.json").read_text())
+    previous = json.loads((checkpoint / "jag_run_config.json").read_text())
     prior_recipe = previous.get("training_recipe", load_recipe())
     if recipe_fingerprint(prior_recipe) != recipe_fingerprint(config.get("training_recipe", load_recipe())):
         raise ValueError("Exact resume requires the same optimizer and scheduler recipe")
@@ -201,7 +201,7 @@ def train_stage(args, stage, model, processor, dataset, config, callbacks=None, 
 
 
 def run(args):
-    from groundingjev.monitoring import MonitoringSession
+    from jag.monitoring import MonitoringSession
 
     world_size = int(os.environ.get("WORLD_SIZE", "1"))
     if world_size not in {1, 2, 4}:
@@ -235,7 +235,7 @@ def run(args):
                   joint_scheduler=recipe["joint_scheduler"], joint_warmup_ratio=recipe["joint_warmup_ratio"],
                   optimizer="AdamW", adam_betas=recipe["adam_betas"], adam_epsilon=recipe["adam_epsilon"],
                   weight_decay=recipe["weight_decay"], max_grad_norm=recipe["max_grad_norm"],
-                  sampler="groundingjev.trainer.GroundingBatchSampler",
+                  sampler="jag.trainer.GroundingBatchSampler",
                   validation_dataset=None, evaluation_policy="Evaluation samples are not used for gradient updates.")
     joint_steps = args.max_steps if args.max_steps > 0 else math.ceil(
         math.ceil(math.ceil(len(dataset) / divisor) / config["gradient_accumulation_steps"]) * args.joint_epochs)
@@ -262,9 +262,9 @@ def run(args):
         processor = AutoProcessor.from_pretrained(processor_path, local_files_only=True)
         initial = resume or (Path(args.init_checkpoint) if args.init_checkpoint else None)
         if initial:
-            model = GroundingJevModel.from_pretrained(initial, dtype=torch.float32, local_files_only=True)
+            model = JagModel.from_pretrained(initial, dtype=torch.float32, local_files_only=True)
         else:
-            model = GroundingJevModel.from_base(args.model, stage=stages[0], torch_dtype=torch.float32)
+            model = JagModel.from_base(args.model, stage=stages[0], torch_dtype=torch.float32)
         offset = args.head_steps if resume_stage == "joint" and args.stage == "all" else 0
         for stage in stages:
             checkpoint, steps = train_stage(

@@ -14,7 +14,7 @@ from transformers import AutoProcessor
 from .data import GroundingCollator
 from .batching import prepare_batch
 from .geometry import cxcywh_to_xyxy
-from .model import GroundingJevModel
+from .model import JagModel
 
 
 def inference_inputs(processor, image, expression, max_pixels=262144, max_length=2048):
@@ -80,7 +80,7 @@ class GroundingPredictor:
         if weight_dtype not in {"fp32", "bf16"}:
             raise ValueError("weight_dtype must be 'fp32' or 'bf16'")
         checkpoint = Path(checkpoint)
-        model, info = GroundingJevModel.from_pretrained(
+        model, info = JagModel.from_pretrained(
             checkpoint, local_files_only=True, dtype=torch.float32, output_loading_info=True)
         issues = {key: info.get(key) for key in
                   ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")

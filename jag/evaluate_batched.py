@@ -14,7 +14,7 @@ import time
 from PIL import Image
 
 from .data import RefCOCODataset, referring_expression, target_cxcywh
-from .evaluation import GroundingJevAPI, checkpoint_manifest, file_sha256, run_evaluation
+from .evaluation import JagAPI, checkpoint_manifest, file_sha256, run_evaluation
 from .evaluate_base import base_checkpoint_manifest
 
 
@@ -60,7 +60,7 @@ def prepare_records(jsonl, limit=None):
             raise ValueError(f"Sample {index} must contain exactly one image")
         path = Path(row["images"][0])
         if not path.is_absolute():
-            path = Path(row.get("_groundingjev_source_dir", ".")) / path
+            path = Path(row.get("_jag_source_dir", ".")) / path
         image = str(path)
         if image not in images:
             images[image] = image_identity(image)
@@ -207,7 +207,7 @@ class ReplayPredictor:
             raise RuntimeError("EvalScope did not consume each cached prediction exactly once")
 
 
-class ReplayAPI(GroundingJevAPI):
+class ReplayAPI(JagAPI):
     def generate(self, input, tools=None, tool_choice=None, config=None):
         from evalscope.api.model import ModelOutput
         users = [message for message in input if message.role == "user"]
@@ -303,7 +303,7 @@ def precompute(predictor, source, cached, cache_path, batch_size, progress_path=
 
 def argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-kind", choices=["base", "groundingjev"], required=True)
+    parser.add_argument("--model-kind", choices=["base", "jag"], required=True)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--jsonl", required=True)
     parser.add_argument("--subset", default="test")
@@ -345,7 +345,7 @@ def main():
     output = Path(args.output) / f"{args.subset}-{manifest['fingerprint'][:12]}-{stamp}"
     output.mkdir(parents=True, exist_ok=False)
     atomic_json(output / "evaluation_manifest.json", manifest)
-    model_name = ("qwen35-base-" if args.model_kind == "base" else "groundingjev-") + manifest["fingerprint"][:12]
+    model_name = ("qwen35-base-" if args.model_kind == "base" else "jag-") + manifest["fingerprint"][:12]
     try:
         source, images = prepare_records(args.jsonl, args.limit)
         cached, resume = [], None

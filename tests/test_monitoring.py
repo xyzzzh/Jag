@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from groundingjev.monitoring import MonitoringSession, public_config, read_swanlab_api_key
+from jag.monitoring import MonitoringSession, public_config, read_swanlab_api_key
 
 
 class MonitoringTests(unittest.TestCase):

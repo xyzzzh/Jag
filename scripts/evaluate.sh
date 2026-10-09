@@ -2,7 +2,7 @@
 set -euo pipefail
 task_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 task_model="${1:-jag}"
-if [[ "$task_model" != jag && "$task_model" != groundingjev && "$task_model" != base ]]; then
+if [[ "$task_model" != jag && "$task_model" != base ]]; then
   printf '%s\n' 'Usage: bash scripts/evaluate.sh jag|base [evaluation arguments]' >&2
   exit 2
 fi
