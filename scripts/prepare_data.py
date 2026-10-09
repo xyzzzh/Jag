@@ -15,7 +15,8 @@ import zipfile
 IMAGE_PREFIX = "/workspace/datasets/RefCOCO/train2014"
 MAX_UNCOMPRESSED_BYTES = 4 * 1024 ** 3
 ARCHIVE_ANNOTATIONS = frozenset({
-    "refcoco_80k_train.jsonl", "refcoco_testA_eval.jsonl", "refcoco_testB_eval.jsonl",
+    "refcoco_train.jsonl", "refcoco_80k_train.jsonl",
+    "refcoco_testA_eval.jsonl", "refcoco_testB_eval.jsonl",
     "refcocop_testA_eval.jsonl", "refcocop_testB_eval.jsonl", "refcocog_test_eval.jsonl",
 })
 
@@ -132,7 +133,7 @@ def main():
         parser.error("--image-root must identify an existing directory")
     output = args.output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix=".groundingjev-data-", dir=output.parent) as temporary:
+    with tempfile.TemporaryDirectory(prefix=".jag-data-", dir=output.parent) as temporary:
         stage = Path(temporary)
         records = {}
         if args.archive:

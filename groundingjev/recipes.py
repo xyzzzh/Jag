@@ -1,4 +1,4 @@
-"""Validated optimizer and scheduler settings for GroundingJev."""
+"""Validated optimizer and scheduler settings for Jag."""
 
 from copy import deepcopy
 import hashlib
@@ -17,10 +17,18 @@ RECIPE_FIELDS = {
 
 def default_config_path():
     """Resolve the checkout or installed-wheel config without consulting cwd."""
-    checkout = Path(__file__).resolve().parents[1] / "configs/train/groundingjev.json"
-    if checkout.is_file():
-        return checkout
-    return Path(sysconfig.get_path("data")) / "share/groundingjev/configs/train/groundingjev.json"
+    root = Path(__file__).resolve().parents[1]
+    prefix = Path(sysconfig.get_path("data"))
+    candidates = (
+        root / "configs/train/jag.json",
+        root / "configs/train/groundingjev.json",
+        prefix / "share/jag/configs/train/jag.json",
+        prefix / "share/groundingjev/configs/train/groundingjev.json",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError("Jag training configuration is missing from the checkout or installation")
 
 
 def validate_recipe(recipe):

@@ -29,7 +29,7 @@ PINNED_MANIFEST = Path(__file__).with_name("base_model_manifest.json")
 MODEL_ROOT = Path("/models") if Path("/.dockerenv").exists() else PROJECT_ROOT / "models"
 OUTPUT_ROOT = Path("/outputs") if Path("/.dockerenv").exists() else PROJECT_ROOT / "outputs"
 ENDPOINT = "https://modelscope.cn"
-USER_AGENT = "GroundingJev-model-preparation/1.0"
+USER_AGENT = "Jag-model-preparation/1.0"
 MANIFEST_NAME = ".modelscope-content-manifest.json"
 ASSET_NAMES = {
     "LICENSE",

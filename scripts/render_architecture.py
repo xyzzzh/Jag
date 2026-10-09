@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draw GroundingJev's qualitative framework in compact ACL figure style.
+"""Draw Jag's qualitative framework in compact ACL figure style.
 
 Architecture sources: groundingjev/model.py and docs/architecture.md.
 This schematic encodes no experimental measurements.
@@ -28,7 +28,7 @@ def render(root):
         "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
         "mathtext.fontset": "stix", "font.size": 7.4,
         "pdf.fonttype": 42, "ps.fonttype": 42, "svg.fonttype": "none",
-        "svg.hashsalt": "groundingjev-architecture",
+        "svg.hashsalt": "jag-architecture",
         "figure.facecolor": "white", "savefig.facecolor": "white",
         "axes.linewidth": 0.6,
     })
@@ -37,7 +37,7 @@ def render(root):
     ax.set(xlim=(0, 7), ylim=(0, 2.15))
     ax.axis("off")
 
-    ax.text(0.02, 2.03, "GroundingJev", weight="bold", fontsize=9.0,
+    ax.text(0.02, 2.03, "Jag", weight="bold", fontsize=9.0,
             color=COLORS["dark"], ha="left", va="center")
     ax.text(6.98, 2.03, "One forward pass", fontsize=8.0,
             color=COLORS["muted"], ha="right", va="center")
@@ -85,10 +85,10 @@ def render(root):
     for extension in ("pdf", "png", "svg"):
         metadata = None
         if extension == "pdf":
-            metadata = {"Title": "GroundingJev architecture", "CreationDate": None,
+            metadata = {"Title": "Jag architecture", "CreationDate": None,
                         "ModDate": None}
         elif extension == "svg":
-            metadata = {"Title": "GroundingJev architecture", "Date": None,
+            metadata = {"Title": "Jag architecture", "Date": None,
                         "Description": "An image and expression enter Qwen3.5-0.8B. "
                         "The last valid hidden state feeds a box regression head, "
                         "producing a bounding box in one forward pass."}

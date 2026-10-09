@@ -15,14 +15,14 @@ def fixture():
         "status": "provisional", "quality": {"status": "provisional", "rows": [
             {"dataset": "refcoco", "split": "testA", "samples": 5657, "models": {
                 "Qwen3.5-0.8B": {"miou": .75, "iou_at_05": .85},
-                "GroundingJev": {"miou": .8, "iou_at_05": .9}}}]},
+                "Jag": {"miou": .8, "iou_at_05": .9}}}]},
         "efficiency": {"kind": "evaluation_workflow", "status": "provisional", "samples": 5657,
                        "hardware": "Test GPU", "batch_size": None,
-                       "batch_sizes": {"Qwen3.5-0.8B": 64, "GroundingJev": 1},
+                       "batch_sizes": {"Qwen3.5-0.8B": 64, "Jag": 1},
                        "models": {
                            "Qwen3.5-0.8B": {"mean_ms": None, "samples_per_second": None,
                                             "effective_inference_batch_sizes": [16, 32, 64, None]},
-                           "GroundingJev": {"mean_ms": 100., "samples_per_second": 10.,
+                           "Jag": {"mean_ms": 100., "samples_per_second": 10.,
                                             "effective_inference_batch_sizes": [1]}}},
     }
 
@@ -34,7 +34,7 @@ class ResultsRenderingTests(unittest.TestCase):
             text = render_results.tables(result, chinese=chinese)
             self.assertIn("| Qwen3.5-0.8B | — | — |", text)
             self.assertIn("Qwen3.5-0.8B=64", text)
-            self.assertIn("GroundingJev=1", text)
+            self.assertIn("Jag=1", text)
             self.assertIn("16–64+?", text)
             self.assertNotIn("batch size = 1", text)
             self.assertNotIn("batch size = None", text)
@@ -50,7 +50,7 @@ class ResultsRenderingTests(unittest.TestCase):
         self.assertIn("Latency", text)
         self.assertIn("1.00× inference speedup", text)
         self.assertIn("Qwen3.5-0.8B=1", text)
-        self.assertIn("GroundingJev=1", text)
+        self.assertIn("Jag=1", text)
         self.assertNotIn("complete-workflow timing is unavailable", text)
 
     def test_merge_uses_sample_statistics_not_equal_split_or_rounded_averages(self):
@@ -65,9 +65,9 @@ class ResultsRenderingTests(unittest.TestCase):
         ]
         merged, = render_results.dataset_rows(result)
         self.assertEqual(merged["samples"], 10)
-        self.assertAlmostEqual(merged["models"]["GroundingJev"]["miou"], .82)
-        self.assertAlmostEqual(merged["models"]["GroundingJev"]["iou_at_05"], .9)
-        result["quality"]["rows"][1]["models"]["GroundingJev"].pop("iou_sum")
+        self.assertAlmostEqual(merged["models"]["Jag"]["miou"], .82)
+        self.assertAlmostEqual(merged["models"]["Jag"]["iou_at_05"], .9)
+        result["quality"]["rows"][1]["models"]["Jag"].pop("iou_sum")
         with self.assertRaisesRegex(ValueError, "original IoU sums"):
             render_results.dataset_rows(result)
 
@@ -90,7 +90,7 @@ class ResultsRenderingTests(unittest.TestCase):
     def test_speedup_is_latency_ratio_only_for_complete_prediction_benchmark(self):
         result = fixture()
         result["efficiency"]["models"]["Qwen3.5-0.8B"]["mean_ms"] = 1600.
-        result["efficiency"]["models"]["GroundingJev"]["mean_ms"] = 200.
+        result["efficiency"]["models"]["Jag"]["mean_ms"] = 200.
         self.assertIsNone(render_results.inference_speedup(result["efficiency"]))
         result["efficiency"].update(kind="isolated_prediction", status="complete")
         self.assertEqual(render_results.inference_speedup(result["efficiency"]), 8.)
@@ -103,7 +103,7 @@ class ResultsRenderingTests(unittest.TestCase):
         for all_missing in (False, True):
             result = deepcopy(fixture())
             if all_missing:
-                result["efficiency"]["models"]["GroundingJev"].update(mean_ms=None, samples_per_second=None)
+                result["efficiency"]["models"]["Jag"].update(mean_ms=None, samples_per_second=None)
             with TemporaryDirectory() as directory:
                 root = Path(directory)
                 render_results.figure(result, root)
@@ -117,7 +117,7 @@ class ResultsRenderingTests(unittest.TestCase):
             annotations = Path(directory)
             for dataset, subset in evaluate_all.SPLITS:
                 (annotations / f"{dataset}_{subset}_eval.jsonl").write_text("{}\n")
-            for model in ("groundingjev", "base"):
+            for model in ("jag", "groundingjev", "base"):
                 argv = ["evaluate_all.py", model, "--annotations", str(annotations)]
                 with patch("sys.argv", argv), patch.object(evaluate_all.subprocess, "run") as run:
                     evaluate_all.main()
@@ -125,9 +125,9 @@ class ResultsRenderingTests(unittest.TestCase):
                 for call in run.call_args_list:
                     arguments = call.args[0]
                     self.assertIn("groundingjev.evaluate_batched", arguments)
-                    self.assertEqual(arguments[arguments.index("--model-kind") + 1], model)
+                    self.assertEqual(arguments[arguments.index("--model-kind") + 1], "base" if model == "base" else "groundingjev")
                     self.assertEqual(arguments[arguments.index("--batch-size") + 1], "64")
-                    expected = "/models/Qwen3.5-0.8B" if model == "base" else "/models/GroundingJev"
+                    expected = "/models/Qwen3.5-0.8B" if model == "base" else "/models/Jag"
                     self.assertEqual(arguments[arguments.index("--checkpoint") + 1], expected)
 
 

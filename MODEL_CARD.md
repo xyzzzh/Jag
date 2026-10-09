@@ -1,62 +1,82 @@
 ---
 language:
   - en
+license: apache-2.0
+base_model: Qwen/Qwen3.5-0.8B
+library_name: transformers
 tags:
   - visual-grounding
   - referring-expression-comprehension
   - qwen3.5
   - modelscope
-base_model: Qwen/Qwen3.5-0.8B
-license: apache-2.0
+  - safetensors
 ---
 
-# GroundingJev model card / 模型卡
+# Jag: Direct Box Prediction for Efficient Visual Grounding
 
-Inspired by [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) and its direct, task-specific outputs, GroundingJev adapts Qwen3.5-0.8B for non-autoregressive visual grounding. A continuous regression head maps the last valid token's multimodal representation to normalized `(cx, cy, width, height)`, replacing autoregressive coordinate decoding.
+[Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
 
-GroundingJev 受 [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) 直接输出结构化结果的思路启发，基于 Qwen3.5-0.8B 实现非自回归 Visual Grounding，利用连续坐标回归头，将最后一个有效 token 的多模态表征映射为归一化的 `(cx, cy, width, height)`，替代自回归坐标解码。
+Jag adapts Qwen3.5-0.8B for visual grounding through continuous box prediction. A lightweight MLP reads the last valid input-token state and predicts a complete bounding box in one multimodal forward pass, without coordinate-token generation. The approach is inspired by Jev's use of task-specific outputs.
 
-- **Base model / 基础模型**: Qwen3.5-0.8B
-- **Training / 训练**: ModelScope ms-swift
-- **Evaluation / 评估**: ModelScope EvalScope
-- **Training annotations / 训练标注**: `refcoco_80k_train.jsonl`
-- **Objective / 训练目标**: `5 × L1 + 2 × (1 − GIoU)`
-- **Output / 输出**: Original-image `xyxy` box / 原图 `xyxy` 边界框
-- **Model weights / 模型权重**: [xyzzzh/GroundingJev](https://huggingface.co/xyzzzh/GroundingJev)
+This repository provides the model weights used in the Jag paper, together with the image processor, tokenizer, and inference code. The model outputs one normalized `cxcywh` box for an image and an English referring expression. The prediction script also returns pixel coordinates in the original image.
 
-## Usage / 使用
+## Quick start
 
-Follow the [quick start](README.md#quick-start) for installation, data preparation, training, inference, and evaluation.
-
-安装、数据准备、训练、推理与评估见[快速开始](README_zh.md#快速开始)。
-
-After Docker setup, download the published weights to skip training:
-
-完成 Docker 环境配置后，可下载已发布权重，跳过训练：
+Use Python 3.12. The complete model is included; inference does not require a separate base-model download.
 
 ```bash
-bash scripts/docker.sh --eval run --rm groundingjev \
-  hf download xyzzzh/GroundingJev --local-dir /models/GroundingJev
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install huggingface-hub
+python -c "from huggingface_hub import snapshot_download; snapshot_download('xyzzzh/Jag', local_dir='Jag')"
+cd Jag
+python -m pip install -e .
+
+python -m groundingjev.predict \
+  --checkpoint . \
+  --image /path/to/image.jpg \
+  --expression 'the person wearing a red shirt' \
+  --device cuda \
+  --weight-dtype bf16
 ```
 
-Then follow the [inference guide](docs/inference.md). 下载后按[推理说明](docs/inference.md)使用。
+The `bbox_xyxy` field contains `[x1, y1, x2, y2]` in original-image pixels. Add `--output prediction.json` to save the result. The `groundingjev` Python package and serialized model class names are retained for compatibility. The `bf16` option stores the backbone in BF16 and keeps the regression head in FP32; use `--weight-dtype fp32` for the full-test accuracy configuration.
 
-## Evaluation / 评估
+## Grounding accuracy
 
-<!-- RELEASE_STATUS:START -->
-Full results: [evaluation record](evaluation/README.md).
+Acc@0.5 (%) on the complete five test splits:
 
-Inference performance results are available.
-<!-- RELEASE_STATUS:END -->
+| Model | RefCOCO testA | RefCOCO testB | RefCOCO+ testA | RefCOCO+ testB | RefCOCOg test |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Base | 84.27 | 74.72 | 76.53 | 62.57 | 77.96 |
+| NExT-Chat | 89.66 | 77.04 | 83.76 | 66.19 | 79.28 |
+| LocateAnything | 93.23 | **89.26** | 88.00 | 79.57 | **88.54** |
+| **Jag** | **93.90** | 88.36 | **90.69** | **80.08** | 87.72 |
 
-## Scope / 适用范围
+Jag improves over its base model on every split and achieves the highest accuracy among the compared models on three splits.
 
-Evaluation covers English referring expressions on RefCOCO, RefCOCO+, and RefCOCOg. The output is a single bounding box; segmentation, multi-object detection, and transfer to other languages or domains have not been evaluated.
+## Inference efficiency
 
-评测覆盖 RefCOCO、RefCOCO+ 和 RefCOCOg 的英文 referring expressions。模型输出单个边界框，尚未评测分割、多目标检测及跨语言、跨领域迁移。
+Single-request measurements with BF16 backbone weights:
 
-## License and acknowledgments / 许可证与致谢
+| Model | Mean latency (ms) ↓ | Throughput (samples/s) ↑ | Peak GPU memory (GiB) ↓ | Jag speedup |
+| :--- | ---: | ---: | ---: | ---: |
+| Base | 1293.01 | 0.77 | **2.25** | 19.60× |
+| NExT-Chat | 120.01 | 8.33 | 15.99 | 1.82× |
+| LocateAnything | 239.05 | 4.18 | 9.66 | 3.62× |
+| Hi-Token | 616.90 | 1.62 | 7.91 | 9.35× |
+| **Jag** | **65.97** | **15.16** | 2.52 | — |
 
-Project code uses [Apache 2.0](LICENSE). Model weights and datasets retain their own licenses. We thank Qwen3.5, ModelScope ms-swift/EvalScope, SwanLab, TypeSafe Jev, and the COCO/RefCOCO authors.
+Latency covers image loading, preprocessing, model prediction, and output conversion, excluding model loading and warmup. Memory is the sampled peak GPU process usage. See the [evaluation documentation](https://github.com/xyzzzh/Jag/tree/main/evaluation) for measurement settings and complete results.
 
-项目代码采用 [Apache 2.0](LICENSE) 许可证，模型权重和数据集遵循各自许可证。感谢 Qwen3.5、ModelScope ms-swift/EvalScope、SwanLab、TypeSafe Jev 及 COCO/RefCOCO 作者。
+## Training
+
+Jag uses 321,327 referring-expression training examples. Training first adapts the regression head, then jointly updates the head, language backbone, and visual merger; the remaining vision encoder stays frozen. The objective is `5 × L1 + 2 × (1 − GIoU)`. ModelScope ms-swift supports training, and EvalScope supports evaluation. The repository provides a [Docker environment and reproduction scripts](https://github.com/xyzzzh/Jag#quick-start).
+
+## Intended use
+
+Jag localizes one object described by an English expression in an image. It returns a bounding box rather than a segmentation mask or a list of detections. Its reported evaluation covers the RefCOCO, RefCOCO+, and RefCOCOg benchmarks.
+
+## License and acknowledgments
+
+See [LICENSE](https://github.com/xyzzzh/Jag/blob/main/LICENSE). Jag builds on [Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) and is inspired by [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev). We thank the authors of Qwen, ModelScope ms-swift, EvalScope, SwanLab, COCO, and the RefCOCO benchmarks. Datasets and third-party software retain their respective licenses.

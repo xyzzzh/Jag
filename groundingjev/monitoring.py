@@ -45,7 +45,7 @@ def read_swanlab_api_key():
 class MonitoringSession:
     """One cloud experiment across both stages; credentials never enter config."""
 
-    def __init__(self, output_dir, run_config, enabled=False, project="GroundingJev",
+    def __init__(self, output_dir, run_config, enabled=False, project="Jag",
                  experiment_name=None, calibration_path=None):
         self.output_dir = Path(output_dir)
         self.config = public_config(run_config)

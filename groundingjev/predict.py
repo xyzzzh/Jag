@@ -75,7 +75,10 @@ class GroundingPredictor:
         self._lock = threading.Lock()
 
     @classmethod
-    def from_checkpoint(cls, checkpoint, processor_path=None, device="cuda", **kwargs):
+    def from_checkpoint(cls, checkpoint, processor_path=None, device="cuda",
+                        weight_dtype="fp32", **kwargs):
+        if weight_dtype not in {"fp32", "bf16"}:
+            raise ValueError("weight_dtype must be 'fp32' or 'bf16'")
         checkpoint = Path(checkpoint)
         model, info = GroundingJevModel.from_pretrained(
             checkpoint, local_files_only=True, dtype=torch.float32, output_loading_info=True)
@@ -83,7 +86,10 @@ class GroundingPredictor:
                   ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
                   if info.get(key)}
         if issues:
-            raise RuntimeError(f"Incomplete GroundingJev checkpoint: {issues}")
+            raise RuntimeError(f"Incomplete Jag model: {issues}")
+        # Round only the backbone for deployment; retain the trained head in FP32.
+        if weight_dtype == "bf16":
+            model.backbone.to(dtype=torch.bfloat16)
         if processor_path is None:
             processor_path = (checkpoint if any((checkpoint / filename).exists() for filename in
                                                 ("processor_config.json", "preprocessor_config.json"))
@@ -145,13 +151,15 @@ def main():
     parser.add_argument("--expression", required=True)
     parser.add_argument("--processor")
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--weight-dtype", choices=("fp32", "bf16"), default="fp32",
+                        help="Backbone weight precision; the box head always stays in FP32")
     parser.add_argument("--max-pixels", type=int, default=262144)
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--output")
     args = parser.parse_args()
     predictor = GroundingPredictor.from_checkpoint(
         args.checkpoint, processor_path=args.processor, device=args.device,
-        max_pixels=args.max_pixels, max_length=args.max_length)
+        max_pixels=args.max_pixels, max_length=args.max_length, weight_dtype=args.weight_dtype)
     result = predictor.predict(args.image, args.expression)
     text = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)
     if args.output:

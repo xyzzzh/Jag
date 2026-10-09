@@ -1,137 +1,127 @@
 <div align="center">
 
-# GroundingJev
+# Jag
 
-**Jev-inspired Non-autoregressive Visual Grounding**
+**Direct Box Prediction for Efficient Visual Grounding**
 
-Qwen3.5-0.8B · ModelScope ms-swift · EvalScope · Docker
+[Project page](https://xyzzzh.github.io/Jag/) · [Model](https://huggingface.co/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
 
-[English](README.md) · [简体中文](README_zh.md) · [Model card](MODEL_CARD.md) · [Evaluation](evaluation/README.md)
+[English](README.md) · [简体中文](README_zh.md)
 
 </div>
 
-![GroundingJev architecture](assets/architecture.svg)
+![Jag architecture](assets/architecture.svg)
 
 ## Introduction
 
-Inspired by [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), GroundingJev applies direct, task-specific output prediction to visual grounding.
+Jag adapts a compact multimodal model for continuous bounding-box prediction. Inspired by [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), it returns the geometric answer directly, retaining the image–language processing of Qwen3.5-0.8B while removing autoregressive coordinate generation.
 
-GroundingJev replaces autoregressive coordinate decoding with continuous bounding-box regression on the Qwen3.5-0.8B multimodal backbone. A lightweight MLP head maps the last valid token's hidden state to normalized `cxcywh` coordinates in a single forward pass.
+A lightweight MLP reads the last valid input-token representation and predicts normalized `cxcywh` coordinates in one forward pass. L1 and GIoU losses supervise head adaptation followed by joint training of the language backbone, visual merger, and regression head. The remaining vision encoder stays frozen.
 
-Training minimizes a weighted L1 and GIoU loss. Head adaptation is followed by joint optimization of the language backbone, visual merger, and regression head; the remaining visual encoder parameters stay frozen.
+Training uses **ModelScope ms-swift**, evaluation uses **EvalScope**, and **Docker** provides the environment. Optional **SwanLab** logging tracks training progress.
 
-Training uses ModelScope **ms-swift**, evaluation uses **EvalScope**, and the environment runs in **Docker**. Optional **SwanLab** logging tracks training progress. See [architecture](docs/architecture.md).
-
-## Demos
-
-[Online demo](https://huggingface.co/spaces/xyzzzh/GroundingJev) · [Model weights](https://huggingface.co/xyzzzh/GroundingJev) · [Local inference](docs/inference.md)
-
-## Evaluation results
+## Results
 
 <!-- RESULTS:START -->
-Full test-set results.
+Accuracy at IoU ≥ 0.5 (%). RefCOCO and RefCOCO+ pool testA and testB by sample count; RefCOCOg uses test.
 
-RefCOCO and RefCOCO+ pool all testA and testB samples; RefCOCOg uses test.
-
-### mIoU ↑ (%)
-
-| Dataset | Qwen3.5-0.8B | **GroundingJev** | Gain (pp) |
+| Model | RefCOCO | RefCOCO+ | RefCOCOg |
 | :--- | ---: | ---: | ---: |
-| RefCOCO | 72.83 | **78.26** | +5.43 |
-| RefCOCO+ | 64.84 | **73.18** | +8.33 |
-| RefCOCOg | 71.52 | **74.97** | +3.45 |
+| Base (Qwen3.5-0.8B) | 79.74 | 70.10 | 77.96 |
+| NExT-Chat | 83.68 | 75.67 | 79.28 |
+| LocateAnything | **91.35** | 84.12 | **88.54** |
+| **Jag** | 91.28 | **85.80** | 87.72 |
 
-### IoU@0.5 ↑ (%)
+Jag improves over Base across all five test splits and leads the compared models on three splits. See the [per-split results](evaluation/README.md).
 
-| Dataset | Qwen3.5-0.8B | **GroundingJev** | Gain (pp) |
+Single-request end-to-end inference:
+
+| Model | Latency ↓ (ms) | Throughput ↑ (samples/s) | GPU memory ↓ (GiB) |
 | :--- | ---: | ---: | ---: |
-| RefCOCO | 79.74 | **89.11** | +9.37 |
-| RefCOCO+ | 70.10 | **82.82** | +12.72 |
-| RefCOCOg | 77.96 | **85.46** | +7.50 |
+| Base | 1293.01 | 0.77 | 2.25 |
+| NExT-Chat | 120.01 | 8.33 | 15.99 |
+| LocateAnything | 239.05 | 4.18 | 9.66 |
+| Hi-Token | 616.90 | 1.62 | 7.91 |
+| Jag | 65.97 | 15.16 | 2.52 |
 
-### Inference performance
-
-| Model | Latency ↓ (ms) | Throughput ↑ (samples/s) | Speedup ↑ |
-| :--- | ---: | ---: | ---: |
-| Qwen3.5-0.8B | 1588.53 | 0.630 | 1.00× |
-| GroundingJev | **184.47** | **5.421** | **8.61×** |
-
-**8.61× inference speedup, with 88.39% lower mean latency.**
-
-End-to-end prediction time, excluding model loading and warmup.
-
-Requested batch: Qwen3.5-0.8B=1, GroundingJev=1
+Jag is **1.82× faster than NExT-Chat**, **3.62× faster than LocateAnything**, and **9.35× faster than Hi-Token** in the measured setting. Model loading and warmup are excluded. GPU memory is the sampled peak process memory.
 <!-- RESULTS:END -->
 
-![Quality and evaluation results](assets/figures/evaluation-results.svg)
+![Single-request latency and GPU memory](docs/site/assets/inference-cost.png)
 
-See [per-split results](evaluation/README.md) and the [evaluation protocol](docs/evaluation.md).
+See the [evaluation protocol](docs/evaluation.md) and [model card](MODEL_CARD.md).
 
 ## Quick start
 
-Run the following commands from the repository root with Docker Compose and NVIDIA Container Toolkit installed.
+Install Docker Compose and NVIDIA Container Toolkit, then clone the repository:
 
 ```bash
-git clone https://github.com/xyzzzh/GroundingJev.git
-cd GroundingJev
-```
-
-### 1. Prepare data and install
-
-Download and extract [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip). Prepare the RefCOCO annotation ZIP, then set `REFCOCO_IMAGES_DIR` in `.env` to the extracted `train2014` directory.
-
-```bash
+git clone https://github.com/xyzzzh/Jag.git
+cd Jag
 cp .env.example .env
-python scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
-bash scripts/docker.sh build
-bash scripts/docker.sh run --rm groundingjev python scripts/download_model.py
 ```
 
-The final command downloads the Qwen3.5-0.8B base model. The training file is `refcoco_80k_train.jsonl`. See [data preparation](docs/data.md) for evaluation filenames.
+### 1. Prepare data and the environment
 
-### 2. Train
+Download and extract [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip). Set `REFCOCO_IMAGES_DIR` in `.env` to the extracted `train2014` folder, then prepare the RefCOCO annotation archive:
+
+```bash
+python3 scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
+bash scripts/docker.sh build
+bash scripts/docker.sh run --rm jag python scripts/download_model.py
+```
+
+The last command downloads the base model. Training uses `refcoco_train.jsonl`; evaluation uses the five test splits listed in the [data guide](docs/data.md).
+
+### 2. Run the model
+
+Download the published weights and predict a box:
+
+```bash
+bash scripts/docker.sh --eval run --rm jag \
+  hf download xyzzzh/Jag --local-dir /models/Jag
+bash scripts/infer.sh \
+  --image /workspace/datasets/RefCOCO/train2014/your_image.jpg \
+  --expression 'the person wearing a red shirt' --weight-dtype bf16
+```
+
+The result contains the bounding box in original-image pixels. You can also try the [online demo](https://huggingface.co/spaces/xyzzzh/Jag).
+
+### 3. Train
 
 ```bash
 bash scripts/train.sh
 ```
 
-Parameters are in [configs/train/groundingjev.json](configs/train/groundingjev.json). Training writes to `outputs/groundingjev` and exports the model to `models/GroundingJev`. To enable SwanLab, set `SWANLAB_API_KEY` and add `--swanlab`.
+If `models/Jag` already exists, choose another export directory with `--export-output /models/Jag-trained`.
 
-### 3. Run inference
-
-To use the published weights directly, skip training and download them:
-
-```bash
-bash scripts/docker.sh --eval run --rm groundingjev \
-  hf download xyzzzh/GroundingJev --local-dir /models/GroundingJev
-```
-
-Run inference:
-
-```bash
-bash scripts/infer.sh \
-  --image /workspace/datasets/RefCOCO/train2014/your_image.jpg \
-  --expression 'the person wearing a red shirt'
-```
-
-The result contains the predicted box in original-image pixels.
+The [training recipe](configs/train/jag.json) trains on the combined RefCOCO-family training data and exports the completed model to `models/Jag`. For SwanLab, set `SWANLAB_API_KEY` and add `--swanlab`. See [training](docs/training.md).
 
 ### 4. Evaluate
 
 ```bash
-bash scripts/evaluate.sh groundingjev
+bash scripts/evaluate.sh jag
 bash scripts/evaluate.sh base
 bash scripts/benchmark.sh
 ```
 
-Quality evaluation covers RefCOCO, RefCOCO+, and RefCOCOg. The benchmark reports latency and throughput. See the [complete results](evaluation/README.md).
+See [evaluation](docs/evaluation.md) for quality and inference measurements.
 
 ## Contributions
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for development and submission instructions.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Citation
+
+```bibtex
+@misc{zhu2026jag,
+  title = {Jag: Direct Box Prediction for Efficient Visual Grounding},
+  author = {Zhu, Xiuyuan and Lu, Ke and Wu, Hao and Du, Zijin and Zhang, Dongming and Xue, Jian},
+  year = {2026},
+  url = {https://xyzzzh.github.io/Jag/}
+}
+```
 
 ## License and acknowledgments
 
-Project code uses [Apache 2.0](LICENSE). Model weights and datasets retain their respective licenses.
-
-GroundingJev is inspired by [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev). We thank [Qwen3.5](https://huggingface.co/Qwen/Qwen3.5-0.8B), [ModelScope ms-swift](https://github.com/modelscope/ms-swift), [EvalScope](https://github.com/modelscope/evalscope), [SwanLab](https://github.com/SwanHubX/SwanLab), and the [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) authors.
+Code uses [Apache 2.0](LICENSE). Model weights and datasets retain their respective licenses. We thank [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), [Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B), [ms-swift](https://github.com/modelscope/ms-swift), [EvalScope](https://github.com/modelscope/evalscope), [SwanLab](https://github.com/SwanHubX/SwanLab), and the [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) authors.

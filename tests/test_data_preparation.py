@@ -26,7 +26,7 @@ def legacy_filename(name):
 
 
 class DataPreparationTests(unittest.TestCase):
-    def test_legacy_archive_exports_only_six_public_names_and_preserves_bytes(self):
+    def test_legacy_archive_exports_supported_public_names_and_preserves_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             archive, output = root / "annotations.zip", root / "prepared"
@@ -37,7 +37,6 @@ class DataPreparationTests(unittest.TestCase):
                     old_name = legacy_filename(name)
                     handle.writestr(f"refcoco/{old_name}", line)
                     handle.writestr(f"__MACOSX/refcoco/._{old_name}", "not JSON; resource metadata")
-                handle.writestr("refcoco/refcoco_train_iousd.jsonl", line)
                 handle.writestr("refcoco/refcoco_30k_train_iousd.jsonl", line)
             with patch("sys.argv", ["prepare_data.py", "--archive", str(archive), "--output", str(output)]):
                 prepare_data.main()
@@ -48,6 +47,30 @@ class DataPreparationTests(unittest.TestCase):
                 self.assertEqual(metadata["rows"], 1)
                 self.assertEqual(metadata["sha256"], expected_sha256)
                 self.assertEqual((output / name).read_text(), line)
+
+    def test_full_training_archive_is_prepared_under_the_default_training_filename(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = json.loads((Path(__file__).resolve().parents[1] / "configs/train/jag.json").read_text())
+            required_name = Path(config["training"]["train_jsonl"]).name
+            self.assertEqual(required_name, "refcoco_train.jsonl")
+            line = annotation_line()
+            row = json.loads(line)
+            row["images"] = ["workspace/datasets/RefCOCO/train2014/example.jpg"]
+            source_line = json.dumps(row, ensure_ascii=False) + "\n"
+            for number, filename in enumerate((required_name, legacy_filename(required_name))):
+                with self.subTest(filename=filename):
+                    archive, output = root / f"{number}.zip", root / f"prepared-{number}"
+                    with zipfile.ZipFile(archive, "w") as handle:
+                        handle.writestr(f"annotations/{filename}", source_line * 3)
+                        handle.writestr("annotations/refcoco_80k_train_iousd.jsonl", source_line)
+                    with patch("sys.argv", ["prepare_data.py", "--archive", str(archive),
+                                             "--output", str(output)]):
+                        prepare_data.main()
+                    manifest = json.loads((output / "manifest.json").read_text())
+                    self.assertEqual(manifest["files"][required_name]["rows"], 3)
+                    self.assertEqual((output / required_name).read_text(), line * 3)
+                    self.assertEqual(manifest["files"]["refcoco_80k_train.jsonl"]["rows"], 1)
 
     def test_old_and_new_jsonl_inputs_produce_identical_public_name_and_hash(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -74,7 +97,8 @@ class DataPreparationTests(unittest.TestCase):
     def test_published_manifest_names_match_the_archive_selection(self):
         path = Path(__file__).resolve().parents[1] / "data/manifest.json"
         manifest = json.loads(path.read_text())
-        self.assertEqual({entry["file"] for entry in manifest["files"]}, prepare_data.ARCHIVE_ANNOTATIONS)
+        names = {entry["file"] for entry in manifest["files"]}
+        self.assertEqual(names, prepare_data.ARCHIVE_ANNOTATIONS - {"refcoco_80k_train.jsonl"})
 
 
 if __name__ == "__main__":

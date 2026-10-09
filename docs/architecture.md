@@ -1,12 +1,12 @@
 # Architecture / 模型结构
 
-The design is inspired by [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev): produce task-specific, typed outputs directly. GroundingJev applies this idea to a continuous four-coordinate output space, implemented with Qwen3.5-0.8B and a regression head.
+The design is inspired by [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev): produce task-specific, typed outputs directly. Jag applies this idea to a continuous four-coordinate output space, implemented with Qwen3.5-0.8B and a regression head.
 
-设计受 [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) 启发：直接预测任务所需的类型化输出。GroundingJev 将这一思路应用于连续的四维坐标输出空间，具体采用 Qwen3.5-0.8B 与坐标回归头实现。
+设计受 [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) 启发：直接预测任务所需的类型化输出。Jag 将这一思路应用于连续的四维坐标输出空间，具体采用 Qwen3.5-0.8B 与坐标回归头实现。
 
-GroundingJev uses the Qwen3.5-0.8B multimodal backbone with a continuous coordinate-regression head. The last valid token's hidden state provides the joint image–expression representation; the head predicts normalized box coordinates without autoregressive coordinate decoding.
+Jag uses the Qwen3.5-0.8B multimodal backbone with a continuous coordinate-regression head. The last valid token's hidden state provides the joint image–expression representation; the head predicts normalized box coordinates without autoregressive coordinate decoding.
 
-GroundingJev 在 Qwen3.5-0.8B 多模态主干上接入连续坐标回归头，以最后一个有效 token 的隐藏状态作为图像与表达的联合表征，直接回归归一化边界框坐标，无需自回归坐标解码。
+Jag 在 Qwen3.5-0.8B 多模态主干上接入连续坐标回归头，以最后一个有效 token 的隐藏状态作为图像与表达的联合表征，直接回归归一化边界框坐标，无需自回归坐标解码。
 
 ```text
 Image + expression / 图像 + 描述

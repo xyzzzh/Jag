@@ -2,12 +2,12 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" width="496.8pt" height="149.94pt" viewBox="0 0 496.8 149.94" xmlns="http://www.w3.org/2000/svg" version="1.1">
- <title>GroundingJev architecture</title>
+ <title>Jag architecture</title>
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>GroundingJev architecture</dc:title>
+    <dc:title>Jag architecture</dc:title>
     <dc:description>An image and expression enter Qwen3.5-0.8B. The last valid hidden state feeds a box regression head, producing a bounding box in one forward pass.</dc:description>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
@@ -37,7 +37,7 @@ L 84.7008 95.832
 L 84.7008 30.168
 L 2.8512 30.168
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #ffffff; stroke: #8f98a3; stroke-width: 0.75; stroke-linejoin: miter"/>
+" clip-path="url(#pb96a988d75)" style="fill: #ffffff; stroke: #8f98a3; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 103.752 95.832
@@ -45,7 +45,7 @@ L 213.12 95.832
 L 213.12 30.168
 L 103.752 30.168
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
+" clip-path="url(#pb96a988d75)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 232.1712 95.832
@@ -53,7 +53,7 @@ L 299.2032 95.832
 L 299.2032 30.168
 L 232.1712 30.168
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #ffffff; stroke: #8f98a3; stroke-width: 0.75; stroke-linejoin: miter"/>
+" clip-path="url(#pb96a988d75)" style="fill: #ffffff; stroke: #8f98a3; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 318.2544 95.832
@@ -61,7 +61,7 @@ L 398.6928 95.832
 L 398.6928 30.168
 L 318.2544 30.168
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
+" clip-path="url(#pb96a988d75)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 417.744 95.832
@@ -69,55 +69,55 @@ L 493.9488 95.832
 L 493.9488 30.168
 L 417.744 30.168
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
+" clip-path="url(#pb96a988d75)" style="fill: #f6f8fa; stroke: #254b63; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 86.4648 63
 Q 94.2264 63 101.149475 63
-" clip-path="url(#p1fef8643ab)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
     <path d="M 98.149475 61.5
 L 101.149475 63
 L 98.149475 64.5
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
    </g>
    <g id="patch_8">
     <path d="M 214.884 63
 Q 222.6456 63 229.568675 63
-" clip-path="url(#p1fef8643ab)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
     <path d="M 226.568675 61.5
 L 229.568675 63
 L 226.568675 64.5
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
    </g>
    <g id="patch_9">
     <path d="M 300.9672 63
 Q 308.7288 63 315.651875 63
-" clip-path="url(#p1fef8643ab)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
     <path d="M 312.651875 61.5
 L 315.651875 63
 L 312.651875 64.5
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
    </g>
    <g id="patch_10">
     <path d="M 400.4568 63
 Q 408.2184 63 415.141475 63
-" clip-path="url(#p1fef8643ab)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: none; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
     <path d="M 412.141475 61.5
 L 415.141475 63
 L 412.141475 64.5
 z
-" clip-path="url(#p1fef8643ab)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
+" clip-path="url(#pb96a988d75)" style="fill: #254b63; stroke: #254b63; stroke-width: 0.75; stroke-linecap: round"/>
    </g>
    <g id="line2d_1">
     <path d="M 2.8512 121.824
 L 493.9488 121.824
-" clip-path="url(#p1fef8643ab)" style="fill: none; stroke: #d8dee6; stroke-width: 0.55; stroke-linecap: square"/>
+" clip-path="url(#pb96a988d75)" style="fill: none; stroke: #d8dee6; stroke-width: 0.55; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <text style="font-weight: 700; font-size: 9px; font-family: 'Times New Roman', 'Times', 'DejaVu Serif', serif; text-anchor: start; fill: #222222" x="2.8512" y="11.986242" transform="rotate(-0 2.8512 11.986242)">GroundingJev</text>
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Times New Roman', 'Times', 'DejaVu Serif', serif; text-anchor: start; fill: #222222" x="2.8512" y="11.985891" transform="rotate(-0 2.8512 11.985891)">Jag</text>
    </g>
    <g id="text_2">
     <text style="font-size: 8px; font-family: 'Times New Roman', 'Times', 'DejaVu Serif', serif; text-anchor: end; fill: #6b7280" x="493.9488" y="11.726438" transform="rotate(-0 493.9488 11.726438)">One forward pass</text>
@@ -221,7 +221,7 @@ L 493.9488 121.824
   </g>
  </g>
  <defs>
-  <clipPath id="p1fef8643ab">
+  <clipPath id="pb96a988d75">
    <rect x="1.44" y="1.44" width="493.92" height="147.06"/>
   </clipPath>
  </defs>

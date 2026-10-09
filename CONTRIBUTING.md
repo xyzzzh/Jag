@@ -9,7 +9,7 @@ Run the checks with the project environment:
 使用项目环境运行检查：
 
 ```bash
-bash scripts/docker.sh run --rm groundingjev python -m unittest discover -s tests -v
+bash scripts/docker.sh run --rm jag python -m unittest discover -s tests -v
 ```
 
 Keep datasets, weights, generated outputs, and credentials outside commits. Preserve result-block markers. Contributions use the project's [Apache 2.0 license](LICENSE).

@@ -1,0 +1,10 @@
+# Qwen3.5 fast kernels for the pinned Jag CUDA 12.8 / PyTorch 2.10 runtime.
+# Direct official wheels; install with --no-deps --require-hashes.
+ninja @ https://files.pythonhosted.org/packages/ed/de/0e6edf44d6a04dabd0318a519125ed0415ce437ad5a1ec9b9be03d9048cf/ninja-1.13.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl \
+    --hash=sha256:fb46acf6b93b8dd0322adc3a4945452a4e774b75b91293bafcc7b7f8e6517dfa
+fla-core @ https://files.pythonhosted.org/packages/2d/ed/dfe19c4da779957eb6a42a26812f9b4e2280bf757a17a71933ff59ffcb98/fla_core-0.5.2-py3-none-any.whl \
+    --hash=sha256:5e830c85bad3d0d34677f98ac7074d08687a3756f0f0499d95ceb96eb6920761
+flash-linear-attention @ https://files.pythonhosted.org/packages/90/d2/2070e3cf2148c5cce99ca4876633c4b7b89ec085323600bd3d47aeacd306/flash_linear_attention-0.5.2-py3-none-any.whl \
+    --hash=sha256:dcf405d81f5426393b59037097aa700d0f4a841465d5028d5aa543f4502f2400
+causal-conv1d @ https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.7.0/causal_conv1d-1.7.0%2Bcu12torch2.10cxx11abiTRUE-cp312-cp312-linux_x86_64.whl \
+    --hash=sha256:8e81f8c76435ad31aa41edc6c0c9d26de971a293b190183d2816da71547614d7

@@ -5,7 +5,7 @@ Download and extract [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R
 下载并解压 [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip)，并准备 RefCOCO JSONL 标注文件。
 
 ```bash
-python scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
+python3 scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
 ```
 
 Alternatively, import existing JSONL files:
@@ -13,12 +13,12 @@ Alternatively, import existing JSONL files:
 也可以导入已有 JSONL：
 
 ```bash
-python scripts/prepare_data.py --jsonl /path/to/annotations/*.jsonl --output data/refcoco
+python3 scripts/prepare_data.py --jsonl /path/to/annotations/*.jsonl --output data/refcoco
 ```
 
-Training uses `refcoco_80k_train.jsonl` with 80,000 expressions.
+Training uses `refcoco_train.jsonl` with 321,327 expressions.
 
-训练使用 `refcoco_80k_train.jsonl`，共 80,000 条描述。
+训练使用 `refcoco_train.jsonl`，共 321,327 条描述。
 
 Evaluation files / 评测文件：
 

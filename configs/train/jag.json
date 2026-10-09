@@ -2,14 +2,14 @@
   "schema_version": 1,
   "training": {
     "model": "/models/Qwen3.5-0.8B",
-    "train_jsonl": "/workspace/datasets/RefCOCO/annotations/refcoco_80k_train.jsonl",
+    "train_jsonl": "/workspace/datasets/RefCOCO/annotations/refcoco_train.jsonl",
     "stage": "all",
     "microbatch": 2,
     "effective_batch_size": 96,
     "head_steps": 100,
     "joint_epochs": 2.0,
-    "max_steps": -1,
-    "expected_samples": 80000,
+    "max_steps": 6696,
+    "expected_samples": 321327,
     "max_pixels": 262144,
     "max_length": 2048,
     "workers": 2,
@@ -17,9 +17,9 @@
     "logging_steps": 1,
     "seed": 42,
     "use_cpu": false,
-    "output_dir": "/outputs/groundingjev",
+    "output_dir": "/outputs/jag",
     "swanlab": false,
-    "run_name": "GroundingJev"
+    "run_name": "Jag"
   },
   "recipe": {
     "head_learning_rate": 0.0005,
@@ -39,7 +39,7 @@
     ],
     "adam_epsilon": 1e-08,
     "schema_version": 1,
-    "name": "groundingjev",
+    "name": "jag",
     "head_warmup_steps": 10
   }
 }

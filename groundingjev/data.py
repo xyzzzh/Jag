@@ -119,7 +119,7 @@ class GroundingCollator:
         for row in rows:
             images = row.get("images", [])
             if len(images) != 1:
-                raise ValueError("GroundingJev expects exactly one original image per sample")
+                raise ValueError("Jag expects exactly one original image per sample")
             image_path = Path(images[0])
             if not image_path.is_absolute():
                 image_path = Path(row.get("_groundingjev_source_dir", ".")) / image_path

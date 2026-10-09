@@ -12,6 +12,7 @@ PACKAGES = {
     "ms-swift": "4.3.2", "evalscope": "1.12.0", "modelscope": "1.37.0",
     "datasets": "4.8.4", "peft": "0.19.0", "accelerate": "1.12.0",
     "trl": "0.29.1", "qwen-vl-utils": "0.0.14", "swanlab": "0.10.1",
+    "fla-core": "0.5.2", "flash-linear-attention": "0.5.2", "causal-conv1d": "1.7.0",
 }
 
 
@@ -25,7 +26,7 @@ def main():
     for name, expected in PACKAGES.items():
         if installed[name].split("+")[0] != expected:
             raise RuntimeError(f"Unexpected version for {name}: {installed[name]}")
-    for name in ("torch", "torchvision", "transformers", "swift", "evalscope", "modelscope", "swanlab"):
+    for name in ("torch", "torchvision", "transformers", "swift", "evalscope", "modelscope", "swanlab", "fla", "causal_conv1d"):
         importlib.import_module(name)
     from transformers import Qwen3_5Model, Qwen3_5ForConditionalGeneration
     from swift.trainers import Trainer

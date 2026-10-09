@@ -4,10 +4,9 @@
   "normalization": "scripts/prepare_data.py: one absolute container image path, UTF-8 JSON lines, original targets and expressions unchanged.",
   "files": [
     {
-      "file": "refcoco_80k_train.jsonl",
-      "samples": 80000,
-      "source_sha256": "ec05689e90df690716ad6039bf57a4675722f1a71121cb4a861ac6c4e4200b10",
-      "prepared_sha256": "ec05689e90df690716ad6039bf57a4675722f1a71121cb4a861ac6c4e4200b10"
+      "file": "refcoco_train.jsonl",
+      "samples": 321327,
+      "prepared_sha256": "24ee9a1352120a51617c95e2f9167146cc5072e2eafb6c99fdb5a60aa2588288"
     },
     {
       "file": "refcoco_testA_eval.jsonl",

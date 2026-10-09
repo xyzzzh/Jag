@@ -1,10 +1,10 @@
-GroundingJev
-Copyright 2026 GroundingJev contributors
+Jag
+Copyright 2026 Jag contributors
 
 Project source code is licensed under Apache-2.0.
 Model weights, external libraries, and datasets retain their respective licenses.
 
-GroundingJev builds on Qwen3.5, ModelScope ms-swift, EvalScope, and SwanLab.
+Jag builds on Qwen3.5, ModelScope ms-swift, EvalScope, and SwanLab.
 The direct structured-output approach is inspired by TypeSafe AI's introduction of Jev.
 We acknowledge the COCO and RefCOCO dataset authors.
 

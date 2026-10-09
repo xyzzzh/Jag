@@ -1,0 +1,326 @@
+{
+  "model_weights_sha256": "d31f3fda334a84d8ac66da546994b799c32acafc79b04d663493e132fa408516",
+  "quality": [
+    {
+      "model": "Qwen3.5-0.8B",
+      "dataset": "refcoco",
+      "split": "testA",
+      "samples": 5657,
+      "predictions_sha256": "3cc0bfdb19c973a18d51b766e6ba8a4736277a5335e30e1a47f6774fa7ed7b7a",
+      "metrics": {
+        "samples": 5657,
+        "correct_count": 4767,
+        "valid_count": 5647,
+        "invalid_output_count": 10,
+        "degenerate_count": 0,
+        "acc_05_percent": 84.26727947675447,
+        "mean_iou": 0.7647967712584449
+      }
+    },
+    {
+      "model": "Jag",
+      "dataset": "refcoco",
+      "split": "testA",
+      "samples": 5657,
+      "predictions_sha256": "9ce8b67c07e1e87ac1c64ba4a821a279bf18347f28f00a347c776d7510c3b99d",
+      "metrics": {
+        "samples": 5657,
+        "correct_count": 5312,
+        "valid_count": 5657,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 93.90136114548348,
+        "mean_iou": 0.8477960426367731
+      }
+    },
+    {
+      "model": "NExT-Chat",
+      "dataset": "refcoco",
+      "split": "testA",
+      "samples": 5657,
+      "predictions_sha256": "8615815e52885fc34dfc58984d5007c3d3702f5867154fc7f317cce683615f2b",
+      "metrics": {
+        "samples": 5657,
+        "correct_count": 5072,
+        "valid_count": 5657,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 89.65882976842849,
+        "mean_iou": 0.7504656472329582
+      }
+    },
+    {
+      "model": "LocateAnything",
+      "dataset": "refcoco",
+      "split": "testA",
+      "samples": 5657,
+      "predictions_sha256": "4c609c817c6e6f74f10b8082a5b52f181829bd8585649a9505c478e631b3d0fb",
+      "metrics": {
+        "samples": 5657,
+        "correct_count": 5274,
+        "valid_count": 5656,
+        "invalid_output_count": 1,
+        "degenerate_count": 0,
+        "acc_05_percent": 93.2296270107831,
+        "mean_iou": 0.8629797691101793
+      }
+    },
+    {
+      "model": "Qwen3.5-0.8B",
+      "dataset": "refcoco",
+      "split": "testB",
+      "samples": 5095,
+      "predictions_sha256": "61d5d1cd5b66599491a58f0a7c56e5868e1294dd7d7bdb566632937e1b12ebc0",
+      "metrics": {
+        "samples": 5095,
+        "correct_count": 3807,
+        "valid_count": 5053,
+        "invalid_output_count": 42,
+        "degenerate_count": 1,
+        "acc_05_percent": 74.72031403336605,
+        "mean_iou": 0.6878004329866247
+      }
+    },
+    {
+      "model": "Jag",
+      "dataset": "refcoco",
+      "split": "testB",
+      "samples": 5095,
+      "predictions_sha256": "f2f9274bc6ead8ef6b30ff49250bb2a3c0588816a307fa0432fb3feb77bf7e40",
+      "metrics": {
+        "samples": 5095,
+        "correct_count": 4502,
+        "valid_count": 5095,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 88.36113837095192,
+        "mean_iou": 0.7845610143087881
+      }
+    },
+    {
+      "model": "NExT-Chat",
+      "dataset": "refcoco",
+      "split": "testB",
+      "samples": 5095,
+      "predictions_sha256": "4fccdf66582aff3f31fda35da048c36b07bfc63c4585ef2b26c80fba06f133b7",
+      "metrics": {
+        "samples": 5095,
+        "correct_count": 3925,
+        "valid_count": 5095,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 77.03631010794896,
+        "mean_iou": 0.6541915134114283
+      }
+    },
+    {
+      "model": "LocateAnything",
+      "dataset": "refcoco",
+      "split": "testB",
+      "samples": 5095,
+      "predictions_sha256": "c0e29d2d8b05dcb929cac14f0108e7fa63d2a76bf734c7e7b8867544e0f85acc",
+      "metrics": {
+        "samples": 5095,
+        "correct_count": 4548,
+        "valid_count": 5094,
+        "invalid_output_count": 1,
+        "degenerate_count": 0,
+        "acc_05_percent": 89.26398429833169,
+        "mean_iou": 0.8212466900288308
+      }
+    },
+    {
+      "model": "Qwen3.5-0.8B",
+      "dataset": "refcocop",
+      "split": "testA",
+      "samples": 5726,
+      "predictions_sha256": "2e8d193620296f1970c915c1ec082172488688437be64cf2a93e57264b52a1d0",
+      "metrics": {
+        "samples": 5726,
+        "correct_count": 4382,
+        "valid_count": 5706,
+        "invalid_output_count": 20,
+        "degenerate_count": 0,
+        "acc_05_percent": 76.5281173594132,
+        "mean_iou": 0.7015535957909903
+      }
+    },
+    {
+      "model": "Jag",
+      "dataset": "refcocop",
+      "split": "testA",
+      "samples": 5726,
+      "predictions_sha256": "1aa2e2241815c789b6b4ba54c18cf6de1a4560958e4d3cb39c05a3663ca4f88f",
+      "metrics": {
+        "samples": 5726,
+        "correct_count": 5193,
+        "valid_count": 5726,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 90.69158225637443,
+        "mean_iou": 0.820321308226103
+      }
+    },
+    {
+      "model": "NExT-Chat",
+      "dataset": "refcocop",
+      "split": "testA",
+      "samples": 5726,
+      "predictions_sha256": "c006a196c64a63995309e121492fbd7a702ccf10331443e5357401a678a11769",
+      "metrics": {
+        "samples": 5726,
+        "correct_count": 4796,
+        "valid_count": 5726,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 83.75829549423682,
+        "mean_iou": 0.7058093468271291
+      }
+    },
+    {
+      "model": "LocateAnything",
+      "dataset": "refcocop",
+      "split": "testA",
+      "samples": 5726,
+      "predictions_sha256": "6f4e4b149282583ef9539374bb70c9fcefd21f9473a75103b201a840face66da",
+      "metrics": {
+        "samples": 5726,
+        "correct_count": 5039,
+        "valid_count": 5721,
+        "invalid_output_count": 5,
+        "degenerate_count": 0,
+        "acc_05_percent": 88.0020957038072,
+        "mean_iou": 0.8188346559914502
+      }
+    },
+    {
+      "model": "Qwen3.5-0.8B",
+      "dataset": "refcocop",
+      "split": "testB",
+      "samples": 4889,
+      "predictions_sha256": "0af545b59b02772bca440d71d257b2e6c4dca055ceeb2b1e09c8de2369aac7d2",
+      "metrics": {
+        "samples": 4889,
+        "correct_count": 3059,
+        "valid_count": 4798,
+        "invalid_output_count": 91,
+        "degenerate_count": 0,
+        "acc_05_percent": 62.569032521988134,
+        "mean_iou": 0.5862349491059947
+      }
+    },
+    {
+      "model": "Jag",
+      "dataset": "refcocop",
+      "split": "testB",
+      "samples": 4889,
+      "predictions_sha256": "dd61e55531610e02e7e8aabbdb57d330b51cd45a8c97f4a4330587b74477255f",
+      "metrics": {
+        "samples": 4889,
+        "correct_count": 3915,
+        "valid_count": 4889,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 80.0777255062385,
+        "mean_iou": 0.7215754982403931
+      }
+    },
+    {
+      "model": "NExT-Chat",
+      "dataset": "refcocop",
+      "split": "testB",
+      "samples": 4889,
+      "predictions_sha256": "59ab79f812465f042af93009546686e4427640db0f143c6e94eb36563b7dcbb2",
+      "metrics": {
+        "samples": 4889,
+        "correct_count": 3236,
+        "valid_count": 4889,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 66.18940478625485,
+        "mean_iou": 0.5731861812809151
+      }
+    },
+    {
+      "model": "LocateAnything",
+      "dataset": "refcocop",
+      "split": "testB",
+      "samples": 4889,
+      "predictions_sha256": "0d39c0daa7328debe76e112a7bd92719666f48c71ac0d008eceb77c904af25c9",
+      "metrics": {
+        "samples": 4889,
+        "correct_count": 3890,
+        "valid_count": 4886,
+        "invalid_output_count": 3,
+        "degenerate_count": 0,
+        "acc_05_percent": 79.56637349151156,
+        "mean_iou": 0.7426130949174308
+      }
+    },
+    {
+      "model": "Qwen3.5-0.8B",
+      "dataset": "refcocog",
+      "split": "test",
+      "samples": 9602,
+      "predictions_sha256": "924d68cf468278d6e5c0bdae389cfb2f281f14fe781bae58b03c4ce2d786f2e2",
+      "metrics": {
+        "samples": 9602,
+        "correct_count": 7486,
+        "valid_count": 9524,
+        "invalid_output_count": 78,
+        "degenerate_count": 0,
+        "acc_05_percent": 77.96292439075192,
+        "mean_iou": 0.7151655673713049
+      }
+    },
+    {
+      "model": "Jag",
+      "dataset": "refcocog",
+      "split": "test",
+      "samples": 9602,
+      "predictions_sha256": "53f5dda2aac61530ba075bfc96cf90ef0818bcf6c9ddd2ebf8b10fa3fe352204",
+      "metrics": {
+        "samples": 9602,
+        "correct_count": 8423,
+        "valid_count": 9602,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 87.72130806082066,
+        "mean_iou": 0.7931589180582335
+      }
+    },
+    {
+      "model": "NExT-Chat",
+      "dataset": "refcocog",
+      "split": "test",
+      "samples": 9602,
+      "predictions_sha256": "686c05d56ef4a776c780bf57a88b8d089b6711b56df286515963fc4fc7d96c38",
+      "metrics": {
+        "samples": 9602,
+        "correct_count": 7612,
+        "valid_count": 9602,
+        "invalid_output_count": 0,
+        "degenerate_count": 0,
+        "acc_05_percent": 79.2751510102062,
+        "mean_iou": 0.6668615367244516
+      }
+    },
+    {
+      "model": "LocateAnything",
+      "dataset": "refcocog",
+      "split": "test",
+      "samples": 9602,
+      "predictions_sha256": "e714a988e2537887d52cc48c13a1144150e499539c4436c41a6cbfbd2aeccafd",
+      "metrics": {
+        "samples": 9602,
+        "correct_count": 8502,
+        "valid_count": 9598,
+        "invalid_output_count": 4,
+        "degenerate_count": 0,
+        "acc_05_percent": 88.54405332222454,
+        "mean_iou": 0.8243400569445098
+      }
+    }
+  ],
+  "cost_source_sha256": "aa87721989ba6b6bbf41875792054e00a32629c76a9bb485ed51ffe5a3c27c58"
+}

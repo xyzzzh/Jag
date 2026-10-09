@@ -1,18 +1,18 @@
-name: groundingjev
+name: jag
 services:
-  groundingjev:
-    image: ${GROUNDINGJEV_IMAGE:-groundingjev:local}
+  jag:
+    image: ${JAG_IMAGE:-jag:local}
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    working_dir: /workspace/GroundingJev
-    user: "${GROUNDINGJEV_UID:-1000}:${GROUNDINGJEV_GID:-1000}"
+    working_dir: /workspace/Jag
+    user: "${JAG_UID:-1000}:${JAG_GID:-1000}"
     init: true
     shm_size: "8gb"
     environment:
       PYTHONUNBUFFERED: "1"
       PYTHONDONTWRITEBYTECODE: "1"
-      PYTHONPATH: /workspace/GroundingJev
+      PYTHONPATH: /workspace/Jag
       TOKENIZERS_PARALLELISM: "false"
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       MODELSCOPE_CACHE: /cache/modelscope
@@ -24,14 +24,14 @@ services:
       USE_HF: "0"
       OMP_NUM_THREADS: "${OMP_NUM_THREADS:-2}"
       MKL_NUM_THREADS: "${MKL_NUM_THREADS:-2}"
-      GROUNDINGJEV_NPROC_PER_NODE: "${GROUNDINGJEV_NPROC_PER_NODE:-1}"
+      JAG_NPROC_PER_NODE: "${JAG_NPROC_PER_NODE:-1}"
       SWANLAB_API_KEY: "${SWANLAB_API_KEY:-}"
-      SWANLAB_API_KEY_FILE: "${SWANLAB_API_KEY_FILE:-/workspace/GroundingJev/.secrets/swanlab_api_key}"
+      SWANLAB_API_KEY_FILE: "${SWANLAB_API_KEY_FILE:-/workspace/Jag/.secrets/swanlab_api_key}"
       SWANLAB_PROBE_GIT: "false"
     volumes:
       - type: bind
-        source: ${GROUNDINGJEV_PROJECT_DIR}
-        target: /workspace/GroundingJev
+        source: ${JAG_PROJECT_DIR}
+        target: /workspace/Jag
         bind: {create_host_path: false}
       - type: bind
         source: ${REFCOCO_ANNOTATIONS_DIR}
@@ -44,15 +44,15 @@ services:
         read_only: true
         bind: {create_host_path: false}
       - type: bind
-        source: ${GROUNDINGJEV_MODELS_DIR}
+        source: ${JAG_MODELS_DIR}
         target: /models
         bind: {create_host_path: false}
       - type: bind
-        source: ${GROUNDINGJEV_OUTPUTS_DIR}
+        source: ${JAG_OUTPUTS_DIR}
         target: /outputs
         bind: {create_host_path: false}
       - type: bind
-        source: ${GROUNDINGJEV_CACHE_DIR}
+        source: ${JAG_CACHE_DIR}
         target: /cache
         bind: {create_host_path: false}
     # scripts/docker.sh supplies explicit GPU device IDs from GPU_IDS.

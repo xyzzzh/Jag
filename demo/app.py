@@ -1,4 +1,4 @@
-"""GroundingJev's Gradio Space, using shared ZeroGPU compute."""
+"""Jag's Gradio Space, using shared ZeroGPU compute."""
 
 # Import before torch/model code so ZeroGPU can initialize CUDA emulation.
 import spaces
@@ -13,9 +13,9 @@ from huggingface_hub import snapshot_download
 from rendering import predict_and_draw
 
 
-MODEL_ID = "xyzzzh/GroundingJev"
-MODEL_REVISION = "a2d9f5c676e88ff0504e6cd80b0392ce0856d3a4"
-checkpoint = os.environ.get("GROUNDINGJEV_CHECKPOINT") or snapshot_download(
+MODEL_ID = "xyzzzh/Jag"
+MODEL_REVISION = "20637a50e0c1d84c278ed2a18aeae3c2e7fef971"
+checkpoint = os.environ.get("JAG_MODEL_DIR") or os.environ.get("GROUNDINGJEV_CHECKPOINT") or snapshot_download(
     MODEL_ID,
     revision=MODEL_REVISION,
     allow_patterns=[
@@ -31,7 +31,7 @@ from groundingjev.predict import GroundingPredictor
 
 # ZeroGPU requires the model's CUDA placement during module initialization.
 predictor = GroundingPredictor.from_checkpoint(
-    checkpoint, device="cuda", max_pixels=262144, max_length=2048,
+    checkpoint, device="cuda", max_pixels=262144, max_length=2048, weight_dtype="bf16",
 )
 
 
@@ -43,11 +43,11 @@ def ground(image_path, expression):
         raise gr.Error(str(error)) from error
 
 
-with gr.Blocks(title="GroundingJev", css=".gradio-container {max-width: 1100px !important}") as app:
+with gr.Blocks(title="Jag", css=".gradio-container {max-width: 1100px !important}") as app:
     gr.Markdown(
-        "# GroundingJev\n"
-        "Non-autoregressive visual grounding with Qwen3.5-0.8B. "
-        "[Model](https://huggingface.co/xyzzzh/GroundingJev)"
+        "# Jag\n"
+        "Direct box prediction for efficient visual grounding. "
+        "[Model](https://huggingface.co/xyzzzh/Jag)"
     )
     with gr.Row():
         with gr.Column():

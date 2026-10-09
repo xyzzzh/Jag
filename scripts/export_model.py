@@ -40,14 +40,31 @@ def digest(path):
     return result.hexdigest()
 
 
+def inference_config(config):
+    """Export the direct last-token model without changing its tensor weights."""
+    config = dict(config)
+    if config.get("model_type") == "groundingjev_research_direct":
+        if (config.get("prediction_mode") != "continuous"
+                or config.get("readout") != "last_valid"
+                or config.get("freeze_backbone") is not False):
+            raise ValueError("Only the continuous last-token model supports the Jag inference export")
+        config["model_type"] = "groundingjev"
+        config["architectures"] = ["GroundingJevModel"]
+        for key in ("prediction_mode", "readout", "readout_description", "freeze_backbone",
+                    "num_coordinate_bins", "reg_token", "reg_token_id"):
+            config.pop(key, None)
+        config["keys_to_ignore_at_inference"] = ["loss_l1", "loss_giou"]
+    if config.get("model_type") != "groundingjev":
+        raise ValueError("Source is not a compatible Jag model")
+    return sanitize_config(config)
+
+
 def export_model(checkpoint, output, overwrite=False):
     checkpoint = Path(checkpoint).resolve(strict=True)
     output = Path(output).resolve()
     if output == checkpoint or output in checkpoint.parents or checkpoint in output.parents:
         raise ValueError("Export destination must be separate from the source checkpoint")
-    config = json.loads((checkpoint / "config.json").read_text())
-    if config.get("model_type") != "groundingjev":
-        raise ValueError("Source is not a GroundingJev checkpoint")
+    config = inference_config(json.loads((checkpoint / "config.json").read_text()))
     if config.get("stage") != "joint":
         raise ValueError("Export requires a checkpoint from the joint training stage")
     files = sorted(path for path in checkpoint.iterdir() if
@@ -74,13 +91,15 @@ def export_model(checkpoint, output, overwrite=False):
     try:
         for source in files:
             destination = temporary / source.name
-            if source.name.endswith("config.json"):
+            if source.name == "config.json":
+                destination.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
+            elif source.name.endswith("config.json"):
                 value = sanitize_config(json.loads(source.read_text()))
                 destination.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
             else:
                 shutil.copyfile(source, destination)
         manifest = {
-            "schema_version": 1, "model": "GroundingJev",
+            "schema_version": 1, "model": "Jag",
             "base_model": "Qwen/Qwen3.5-0.8B", "format": "safetensors",
             "files": {path.name: {"sha256": digest(path), "bytes": path.stat().st_size}
                       for path in sorted(temporary.iterdir())},
@@ -93,7 +112,7 @@ def export_model(checkpoint, output, overwrite=False):
         temporary.rename(output)
         if backup is not None:
             shutil.rmtree(backup)
-        print(json.dumps({"status": "exported", "model": "GroundingJev", "output": str(output),
+        print(json.dumps({"status": "exported", "model": "Jag", "output": str(output),
                           "asset_count": len(manifest["files"])}))
         return manifest
     except BaseException:
@@ -108,7 +127,7 @@ def export_model(checkpoint, output, overwrite=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", required=True)
-    parser.add_argument("--output", default="/models/GroundingJev")
+    parser.add_argument("--output", default="/models/Jag")
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
     export_model(args.checkpoint, args.output, args.overwrite)

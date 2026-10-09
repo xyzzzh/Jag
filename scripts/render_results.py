@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 
 
-LABELS = ("Qwen3.5-0.8B", "GroundingJev")
+LABELS = ("Qwen3.5-0.8B", "Jag")
 DATASETS = {"refcoco": "RefCOCO", "refcocop": "RefCOCO+", "refcocog": "RefCOCOg"}
 START, END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
 
@@ -88,12 +88,12 @@ def inference_speedup(efficiency):
 
 
 def metric_table(rows, metric, chinese=False, all_splits=False):
-    title = "mIoU" if metric == "miou" else "IoU@0.5"
+    title = "mIoU" if metric == "miou" else "Acc@0.5"
     heading = "测试划分" if chinese and all_splits else "数据集" if chinese else "Split" if all_splits else "Dataset"
-    gain = "提升（百分点）" if chinese else "Gain (pp)"
+    gain = "提升（百分点）" if chinese else "Gain (points)"
     count = " | 样本数" if chinese else " | Samples"
     lines = [f"### {title} ↑ (%)", "",
-             f"| {heading}" + (count if all_splits else "") + f" | {LABELS[0]} | **GroundingJev** | {gain} |",
+             f"| {heading}" + (count if all_splits else "") + f" | {LABELS[0]} | **Jag** | {gain} |",
              "| :---" + (" | ---:" if all_splits else "") + " | ---: | ---: | ---: |"]
     for row in rows:
         base, model = (row["models"][label][metric] for label in LABELS)
@@ -189,7 +189,7 @@ def figure(result, root):
     plt.rcParams.update({
         "font.family": "serif", "font.serif": ["Times New Roman", "Times", "DejaVu Serif"],
         "mathtext.fontset": "stix", "pdf.fonttype": 42, "ps.fonttype": 42,
-        "svg.fonttype": "none", "svg.hashsalt": "groundingjev-paper-figures",
+        "svg.fonttype": "none", "svg.hashsalt": "jag-paper-figures",
         "figure.facecolor": "white", "savefig.facecolor": "white",
         "axes.linewidth": .6, "xtick.major.width": .5, "ytick.major.width": .5,
         "font.size": 7.2, "axes.labelsize": 7.2, "xtick.labelsize": 6.7,
@@ -200,7 +200,7 @@ def figure(result, root):
     efficiency = result["efficiency"]
     formal = efficiency["kind"] == "isolated_prediction" and efficiency["status"] == "complete"
     fig, axes = plt.subplots(2, 2, figsize=(6.85, 3.90), gridspec_kw={"height_ratios": [1.25, 1]})
-    fig.subplots_adjust(left=.125, right=.965, bottom=.15, top=.86, wspace=.40, hspace=.80)
+    fig.subplots_adjust(left=.125, right=.965, bottom=.15, top=.86, wspace=.64, hspace=.80)
     for axis in axes.flat:
         axis.set_axisbelow(True)
         axis.grid(axis="x", color=colors["grid"], linewidth=.45)
@@ -223,12 +223,12 @@ def figure(result, root):
                           ha="center", color=colors["method"], fontsize=6.1)
             axis.text(1.02, y, f"{method - base:+.2f}", transform=axis.get_yaxis_transform(),
                       ha="left", va="center", fontsize=6.4, color=colors["gain"])
-        axis.text(1.02, 1.06, "Δ (pp)", transform=axis.transAxes, color=colors["gain"], fontsize=6.4)
+        axis.text(1.02, 1.06, "Δ (points)", transform=axis.transAxes, color=colors["gain"], fontsize=6.4)
         axis.set_yticks(range(len(rows)), [DATASETS[row["dataset"]] for row in reversed(rows)])
         axis.set_ylim(-.65, len(rows) - .40)
         axis.set_xlim(55, 100)
         axis.set_xticks([60, 70, 80, 90, 100])
-        metric_name = "mIoU" if metric == "miou" else "IoU@0.5"
+        metric_name = "mIoU" if metric == "miou" else "Acc@0.5"
         axis.set_xlabel(f"{metric_name} (%) ↑", labelpad=3)
         axis.text(0, 1.19, f"({'ab'[panel]}) {metric_name}", transform=axis.transAxes,
                   fontsize=8.4, fontweight="bold", ha="left")
@@ -251,7 +251,7 @@ def figure(result, root):
                       va="center", fontsize=6.7, color=colors["dark"])
         axis.set_xlim(0, maximum * 1.34)
         axis.set_ylim(-.52, 1.66)
-        axis.set_yticks([1, 0], ["Base", "GroundingJev"])
+        axis.set_yticks([1, 0], ["Base", "Jag"])
         title = ("Prediction latency" if panel == 0 else "Prediction throughput") if formal else (
             "Workflow time" if panel == 0 else "Workflow throughput")
         axis.text(0, 1.16, f"({'cd'[panel]}) {title}", transform=axis.transAxes,
@@ -266,7 +266,7 @@ def figure(result, root):
                       markerfacecolor=colors[fill], markeredgecolor=colors[edge],
                       markeredgewidth=.6, label=name)
                for fill, edge, name in [("base", "base_edge", "Base"),
-                                        ("method", "method_edge", "GroundingJev")]]
+                                        ("method", "method_edge", "Jag")]]
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(.54, 1.035),
                ncol=2, frameon=False, fontsize=7.3, handletextpad=.3, columnspacing=1.5)
     caption = ("testA + testB pooled by sample; RefCOCOg: test. "
@@ -301,29 +301,12 @@ def figure(result, root):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Render figures from the public evaluation values")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--no-figure", action="store_true")
     args = parser.parse_args()
     root = args.root.resolve()
     result = json.loads((root / "evaluation/results.json").read_text(encoding="utf-8"))
-    for name, chinese in (("README.md", False), ("README_zh.md", True)):
-        update_block(root / name, tables(result, chinese=chinese))
-    if result["quality"]["status"] == "complete":
-        status = "Full results: [evaluation record](evaluation/README.md)."
-    else:
-        status = "Provisional results: [evaluation record](evaluation/README.md). Full evaluation is pending."
-    if result["efficiency"]["status"] == "complete":
-        status += "\n\nInference performance results are available."
-    else:
-        status += "\n\nCurrent timings cover the evaluation workflow; inference performance results are pending."
-    update_block(root / "MODEL_CARD.md", status, "<!-- RELEASE_STATUS:START -->", "<!-- RELEASE_STATUS:END -->")
-    (root / "evaluation/README.md").write_text(
-        "# Evaluation results\n\n" + tables(result, all_splits=True) +
-        "\n\n[Results / 结果数据](results.json) · [Reproduce / 复现](../docs/evaluation.md)\n\n"
-        "## 中文\n\n" + tables(result, chinese=True, all_splits=True) + "\n", encoding="utf-8")
-    if not args.no_figure:
-        figure(result, root)
+    figure(result, root)
 
 
 if __name__ == "__main__":

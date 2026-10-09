@@ -1,4 +1,4 @@
-"""Run GroundingJev localization evaluation through EvalScope 1.12."""
+"""Run Jag localization evaluation through EvalScope 1.12."""
 
 import argparse
 from datetime import datetime, timezone

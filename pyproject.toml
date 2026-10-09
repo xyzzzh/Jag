@@ -3,9 +3,9 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "groundingjev"
+name = "jag-grounding"
 version = "0.1.0"
-description = "Jev-inspired non-autoregressive visual grounding with Qwen3.5-0.8B"
+description = "Jag: direct box prediction for efficient visual grounding"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"
@@ -19,12 +19,12 @@ dependencies = [
 docs = ["matplotlib==3.11.2"]
 
 [project.urls]
-Repository = "https://github.com/xyzzzh/GroundingJev"
-Model = "https://huggingface.co/xyzzzh/GroundingJev"
-Demo = "https://huggingface.co/spaces/xyzzzh/GroundingJev"
+Repository = "https://github.com/xyzzzh/Jag"
+Model = "https://huggingface.co/xyzzzh/Jag"
+Demo = "https://huggingface.co/spaces/xyzzzh/Jag"
 
 [tool.setuptools.packages.find]
 include = ["groundingjev*"]
 
 [tool.setuptools.data-files]
-"share/groundingjev/configs/train" = ["configs/train/groundingjev.json"]
+"share/jag/configs/train" = ["configs/train/jag.json"]

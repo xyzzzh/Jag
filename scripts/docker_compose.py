@@ -38,6 +38,11 @@ def read_environment(path):
 
 def launch(arguments):
     environment = read_environment(ROOT / ".env")
+    # Existing local environments remain usable after the public project rename.
+    for key, value in list(environment.items()):
+        if key.startswith("GROUNDINGJEV_"):
+            environment.setdefault("JAG_" + key[len("GROUNDINGJEV_"):], value)
+    arguments = ["jag" if value == "groundingjev" else value for value in arguments]
     evaluation = bool(arguments and arguments[0] == "--eval")
     if evaluation:
         arguments = arguments[1:]
@@ -51,16 +56,19 @@ def launch(arguments):
         for value in ids
     ):
         raise ValueError("GPU_IDS/EVAL_GPU must specify unique physical GPU IDs or UUIDs")
-    environment["GROUNDINGJEV_PROJECT_DIR"] = str(ROOT)
-    environment.setdefault("GROUNDINGJEV_UID", str(os.getuid()))
-    environment.setdefault("GROUNDINGJEV_GID", str(os.getgid()))
-    environment.setdefault("GROUNDINGJEV_NPROC_PER_NODE", str(len(training_ids)))
+    environment["JAG_PROJECT_DIR"] = str(ROOT)
+    environment.setdefault("JAG_UID", str(os.getuid()))
+    environment.setdefault("JAG_GID", str(os.getgid()))
+    environment.setdefault("JAG_NPROC_PER_NODE", str(len(training_ids)))
+    if environment.get("SWANLAB_API_KEY_FILE", "").startswith("/workspace/GroundingJev/"):
+        environment["SWANLAB_API_KEY_FILE"] = environment["SWANLAB_API_KEY_FILE"].replace(
+            "/workspace/GroundingJev/", "/workspace/Jag/", 1)
     defaults = {
         "REFCOCO_ANNOTATIONS_DIR": "data/refcoco",
         "REFCOCO_IMAGES_DIR": "data/coco/train2014",
-        "GROUNDINGJEV_MODELS_DIR": "models",
-        "GROUNDINGJEV_OUTPUTS_DIR": "outputs",
-        "GROUNDINGJEV_CACHE_DIR": ".cache",
+        "JAG_MODELS_DIR": "models",
+        "JAG_OUTPUTS_DIR": "outputs",
+        "JAG_CACHE_DIR": ".cache",
     }
     for name, default in defaults.items():
         path = Path(environment.get(name, default)).expanduser()
@@ -71,11 +79,11 @@ def launch(arguments):
     # Build/config do not require the COCO mount. Runtime does.
     if arguments[0] in {"run", "up", "create"} and not Path(environment["REFCOCO_IMAGES_DIR"]).is_dir():
         raise FileNotFoundError("Set REFCOCO_IMAGES_DIR in .env to your existing COCO train2014 directory")
-    specification = {"services": {"groundingjev": {"deploy": {"resources": {
+    specification = {"services": {"jag": {"deploy": {"resources": {
         "reservations": {"devices": [{"driver": "nvidia", "device_ids": ids,
                                        "capabilities": ["gpu"]}]}
     }}}}}
-    descriptor, filename = tempfile.mkstemp(prefix="groundingjev-compose-", suffix=".json")
+    descriptor, filename = tempfile.mkstemp(prefix="jag-compose-", suffix=".json")
     try:
         with os.fdopen(descriptor, "w") as stream:
             json.dump(specification, stream)

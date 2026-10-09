@@ -14,8 +14,8 @@ SPLITS = [
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("model", choices=["groundingjev", "base"])
-    parser.add_argument("--checkpoint", default="/models/GroundingJev")
+    parser.add_argument("model", choices=["jag", "base", "groundingjev"])
+    parser.add_argument("--checkpoint", default="/models/Jag")
     parser.add_argument("--base-model", default="/models/Qwen3.5-0.8B")
     parser.add_argument("--annotations", default="/workspace/datasets/RefCOCO/annotations")
     parser.add_argument("--output", default="/outputs/evaluation")
@@ -30,12 +30,14 @@ def main():
         if not path.is_file():
             raise FileNotFoundError(f"Missing evaluation split: {path}")
     for dataset, subset in SPLITS:
-        checkpoint = args.checkpoint if args.model == "groundingjev" else args.base_model
+        model_kind = "base" if args.model == "base" else "groundingjev"
+        output_name = "base" if args.model == "base" else "jag"
+        checkpoint = args.base_model if args.model == "base" else args.checkpoint
         subprocess.run([
             sys.executable, "-m", "groundingjev.evaluate_batched",
-            "--model-kind", args.model, "--checkpoint", checkpoint,
+            "--model-kind", model_kind, "--checkpoint", checkpoint,
             "--jsonl", str(Path(args.annotations) / f"{dataset}_{subset}_eval.jsonl"),
-            "--subset", subset, "--output", str(Path(args.output) / args.model / f"{dataset}-{subset}"),
+            "--subset", subset, "--output", str(Path(args.output) / output_name / f"{dataset}-{subset}"),
             "--device", "cuda:0", "--gpu-memory-gib", str(args.gpu_memory_gib),
             "--batch-size", str(args.batch_size), *extras,
         ], check=True)

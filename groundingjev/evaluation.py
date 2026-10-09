@@ -103,7 +103,7 @@ class GroundingJevAPI(ModelAPI):
 
 @register_benchmark(BenchmarkMeta(
     name=BENCHMARK_NAME,
-    pretty_name="GroundingJev RefCOCO",
+    pretty_name="Jag RefCOCO",
     description="One image and referring expression to a continuous bounding box.",
     dataset_id="local_refcoco_jsonl",
     subset_list=["test"],

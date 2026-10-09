@@ -13,6 +13,7 @@ import statistics
 import subprocess
 import sys
 import time
+import threading
 
 import torch
 
@@ -224,6 +225,75 @@ class GpuGuard:
             raise RuntimeError(f"Competing compute process detected on benchmark GPU: {unexpected}")
 
 
+class NvmlMemorySampler:
+    """Measure process/context and whole-device memory; these are sampled peaks."""
+    def __init__(self, uuid, pid, interval_ms):
+        import pynvml
+        self.nvml = pynvml
+        self.uuid, self.pid = uuid, pid
+        self.interval = interval_ms/1000
+        self.stop_event = threading.Event()
+        self.samples, self.error = [], None
+        pynvml.nvmlInit()
+        self.handle = pynvml.nvmlDeviceGetHandleByUUID(uuid)
+
+    def sample(self):
+        processes = self.nvml.nvmlDeviceGetComputeRunningProcesses(self.handle)
+        if sorted(process.pid for process in processes) != [self.pid]:
+            raise RuntimeError('Benchmark GPU compute processes changed during NVML sampling')
+        process_bytes = processes[0].usedGpuMemory
+        unavailable = getattr(self.nvml, 'NVML_VALUE_NOT_AVAILABLE', 2**64-1)
+        if process_bytes is None or process_bytes >= unavailable:
+            raise RuntimeError('NVML did not expose this process GPU memory')
+        self.samples.append({'seconds_from_start': time.perf_counter()-self.started,
+                             'process_used_bytes': int(process_bytes),
+                             'device_used_bytes': int(self.nvml.nvmlDeviceGetMemoryInfo(self.handle).used)})
+
+    def poll(self):
+        try:
+            while not self.stop_event.wait(self.interval):
+                self.sample()
+        except Exception as error:
+            self.error = error
+            self.stop_event.set()
+
+    def __enter__(self):
+        self.started = time.perf_counter()
+        try:
+            self.sample()
+            self.thread = threading.Thread(target=self.poll, daemon=True)
+            self.thread.start()
+        except Exception:
+            self.nvml.nvmlShutdown()
+            raise
+        return self
+
+    def __exit__(self, exception_type, exception, traceback):
+        self.stop_event.set()
+        self.thread.join()
+        try:
+            if self.error is None:
+                self.sample()
+        finally:
+            self.nvml.nvmlShutdown()
+        if exception_type is None and self.error is not None:
+            raise RuntimeError('NVML sampling failed') from self.error
+
+    def report(self):
+        gaps = [right['seconds_from_start']-left['seconds_from_start']
+                for left, right in zip(self.samples, self.samples[1:])]
+        process_peak = max(sample['process_used_bytes'] for sample in self.samples)
+        device_peak = max(sample['device_used_bytes'] for sample in self.samples)
+        return {'method': 'NVML periodic sampling', 'scope': 'after_warmup_b1_measurement_window',
+                'gpu_uuid': self.uuid, 'host_process_pid': self.pid,
+                'requested_interval_ms': self.interval*1000, 'sample_count': len(self.samples),
+                'max_observed_interval_ms': max(gaps, default=0)*1000,
+                'baseline_process_used_bytes': self.samples[0]['process_used_bytes'],
+                'peak_process_used_bytes': process_peak, 'peak_process_used_gib': process_peak/2**30,
+                'peak_device_used_bytes': device_peak, 'peak_device_used_gib': device_peak/2**30,
+                'peak_is_sampled': True, 'samples': self.samples}
+
+
 def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
     guard.check(model_key + ":before_load")
     resources = configure_cuda_memory(args.device, memory_gib=args.gpu_memory_gib)
@@ -234,7 +304,9 @@ def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
     else:
         predictor = GroundingPredictor.from_checkpoint(
             args.checkpoint, device=args.device, max_pixels=args.max_pixels, max_length=args.max_length,
-            use_bf16=True)
+            use_bf16=True, weight_dtype=args.weight_dtype)
+    gc.collect()
+    torch.cuda.empty_cache()
     synchronize = lambda: torch.cuda.synchronize(args.device)
     weights = model_weight_statistics(predictor.model)
     predictor.model = TimedModel(predictor.model, synchronize)
@@ -247,17 +319,18 @@ def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
         baseline_reserved = torch.cuda.memory_reserved(args.device)
         torch.cuda.reset_peak_memory_stats(args.device)
         records = []
-        for position, sample in enumerate(measured_samples):
-            # The process query is outside both timed regions and identical for
-            # both models; interval is recorded in the benchmark protocol.
-            if position % 16 == 0:
-                guard.check(f"{model_key}:sample_{position}")
-            records.append(timed_prediction(predictor, sample, model_key, synchronize))
+        with NvmlMemorySampler(guard.uuid, guard.allowed_pid, args.nvml_interval_ms) as sampler:
+            for position, sample in enumerate(measured_samples):
+                if position % 16 == 0:
+                    guard.check(f"{model_key}:sample_{position}")
+                if sampler.error is not None:
+                    raise RuntimeError("GPU memory sampling failed") from sampler.error
+                records.append(timed_prediction(predictor, sample, model_key, synchronize))
         guard.check(model_key + ":after_measurement")
         synchronize()
         summary = summarize_model(records)
         summary.update(
-            weights=weights, resource_limits=resources,
+            weights=weights, resource_limits=resources, nvml_memory=sampler.report(),
             autocast_dtype="bfloat16" if model_key == "groundingjev" else None,
             allocated_bytes_after_warmup=baseline_allocated,
             reserved_bytes_after_warmup=baseline_reserved,
@@ -277,11 +350,11 @@ def benchmark_model(model_key, args, warmup_samples, measured_samples, guard):
 def render_markdown(report):
     base, groundingjev = report["models"]["base"], report["models"]["groundingjev"]
     rows = [
-        "# Base 与 GroundingJev 配对性能测评", "",
+        "# Base 与 Jag 配对性能测评", "",
         f"同一张 {report['gpu']['name']}（{report['gpu']['uuid']}）顺序运行，batch=1。"
-        f"固定抽取 {report['dataset']['num_samples']} 条 RefCOCO testA 样本，"
+        f"固定抽取 {report['dataset']['num_samples']} 条测试样本，"
         f"每个模型先预热 {report['settings']['warmup']} 条独立样本。", "",
-        "| 指标 | 原始 Qwen3.5-0.8B | GroundingJev |", "|---|---:|---:|",
+        "| 指标 | 原始 Qwen3.5-0.8B | Jag |", "|---|---:|---:|",
     ]
     for title, field, subfield in [
         ("端到端平均延迟（ms）", "latency_ms", "mean"),
@@ -292,6 +365,10 @@ def render_markdown(report):
         ("模型调用 P95（ms）", "model_latency_ms", "p95"),
     ]:
         rows.append(f"| {title} | {base[field][subfield]:.3f} | {groundingjev[field][subfield]:.3f} |")
+    if all("nvml_memory" in model for model in (base, groundingjev)):
+        rows.append(
+            f"| 峰值 GPU 进程显存（GiB） | {base['nvml_memory']['peak_process_used_gib']:.3f} | "
+            f"{groundingjev['nvml_memory']['peak_process_used_gib']:.3f} |")
     rows.extend([
         f"| 顺序处理速度（images/s） | {base['images_per_second']:.3f} | {groundingjev['images_per_second']:.3f} |",
         f"| 峰值 allocated 显存（GiB） | {base['peak_allocated_bytes'] / 1024**3:.3f} | {groundingjev['peak_allocated_bytes'] / 1024**3:.3f} |",
@@ -305,7 +382,7 @@ def render_markdown(report):
         "模型计时覆盖 base 的完整 generate 和 groundingjev 的一次 forward。计时边界均同步 CUDA；"
         "权重加载、预热、进程检查及指标计算不计入延迟。速度按 1000 / 平均毫秒计算，表示 batch=1 顺序推理。", "",
         "base 使用 BF16 权重、固定提示词、关闭 thinking、贪心生成，最多 128 个新 token；"
-        "groundingjev 使用正式评测相同的 FP32 权重和 BF16 autocast。两者图像预算为 262144、最大输入长度为 2048。"
+        "Jag 权重精度和 BF16 自动混合精度设置记录在 benchmark.json 中。两者图像预算为 262144、最大输入长度为 2048。"
         "图片在计时前统一校验 SHA，系统文件缓存可能已预热。固定顺序为 base 然后 groundingjev，未进行多轮顺序交叉实验。", "",
         "无效框生成的完整延迟保留在分母中，并作为零 IoU；运行错误使性能测评失败。"
         "这里的 IoU 仅描述固定性能子集；正式质量结论使用完整测试集评测。", "",
@@ -319,6 +396,10 @@ def argument_parser():
     parser.add_argument("--base-model", required=True)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--jsonl", required=True)
+    parser.add_argument("--warmup-jsonl", help="Separate preselected warmup data")
+    parser.add_argument("--source-order", action="store_true", help="Evaluate every prepared row in source order")
+    parser.add_argument("--weight-dtype", choices=["fp32", "bf16"], default="fp32")
+    parser.add_argument("--nvml-interval-ms", type=float, default=20)
     parser.add_argument("--output", required=True)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--gpu-memory-gib", type=float, default=8)
@@ -333,6 +414,10 @@ def argument_parser():
 
 def main():
     args = argument_parser().parse_args()
+    if not math.isfinite(args.nvml_interval_ms) or args.nvml_interval_ms <= 0:
+        raise ValueError("NVML interval must be positive and finite")
+    if args.source_order != bool(args.warmup_jsonl):
+        raise ValueError("Use --source-order and --warmup-jsonl together")
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     if any((output / name).exists() for name in ("benchmark.json", "benchmark.md", "benchmark_started.json")):
@@ -342,9 +427,25 @@ def main():
     guard = None
     try:
         source = RefCOCODataset(args.jsonl)
-        selection = selection_manifest(len(source), args.samples, args.warmup, args.seed)
-        measured = prepare_samples(source, selection["sample_ids"])
-        warmup = prepare_samples(source, selection["warmup_sample_ids"])
+        if args.source_order:
+            warmup_source = RefCOCODataset(args.warmup_jsonl)
+            if not len(source) or not len(warmup_source):
+                raise ValueError("Prepared measurement and warmup data must both be nonempty")
+            selection = {"sample_ids": list(range(len(source))),
+                         "warmup_sample_ids": list(range(len(warmup_source))),
+                         "selection": "preselected_source_order",
+                         "warmup_jsonl_sha256": file_sha256(args.warmup_jsonl)}
+            measured = prepare_samples(source, selection["sample_ids"])
+            warmup = prepare_samples(warmup_source, selection["warmup_sample_ids"])
+            identity = lambda item: (item["image"], item["expression"],
+                                     tuple(item["target_xyxy_normalized"]))
+            if {identity(item) for item in measured} & {identity(item) for item in warmup}:
+                raise ValueError("Warmup and measured samples overlap")
+            args.samples, args.warmup = len(measured), len(warmup)
+        else:
+            selection = selection_manifest(len(source), args.samples, args.warmup, args.seed)
+            measured = prepare_samples(source, selection["sample_ids"])
+            warmup = prepare_samples(source, selection["warmup_sample_ids"])
         manifests = {
             "base": base_checkpoint_manifest(args.base_model, args.jsonl, args.max_pixels, args.max_length,
                                              args.max_new_tokens, args.gpu_memory_gib),
@@ -382,7 +483,7 @@ def main():
                         "num_samples": args.samples, **selection},
             "settings": {"max_pixels": args.max_pixels, "max_length": args.max_length,
                          "max_new_tokens": args.max_new_tokens, "batch_size": 1, "warmup": args.warmup,
-                         "seed": args.seed, "execution_order": ["base", "groundingjev"],
+                         "seed": args.seed, "jag_weight_dtype": args.weight_dtype, "execution_order": ["base", "groundingjev"],
                          "timing_method": "cuda-synchronized-wall-clock", "model_loading_excluded": True,
                          "warmup_excluded": True, "e2e_includes_preprocessing": True,
                          "image_files_prehashed_before_timing": True, "gpu_guard_interval_samples": 16,

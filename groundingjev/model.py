@@ -62,7 +62,7 @@ class GroundingJevModel(PreTrainedModel):
         super().__init__(config)
         if backbone is None:
             if not config.backbone_config:
-                raise ValueError("A GroundingJev checkpoint must include its full backbone configuration")
+                raise ValueError("A Jag model must include its full backbone configuration")
             backbone_config = Qwen3_5Config.from_dict(config.backbone_config)
             backbone_config._attn_implementation = config.backbone_attn_implementation
             backbone = Qwen3_5Model(backbone_config)

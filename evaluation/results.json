@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "complete",
-  "updated_at": "2026-09-25T07:30:16.460871+00:00",
+  "updated_at": "2026-10-09",
   "model": {
-    "name": "GroundingJev",
-    "huggingface_repo": "xyzzzh/GroundingJev",
-    "checkpoint_sha256": "7ecef93d4bdc8576ca6a11dba6106bf5f468ed5aa29ba279c0480ba614319535",
+    "name": "Jag",
+    "huggingface_repo": "xyzzzh/Jag",
+    "checkpoint_sha256": "d31f3fda334a84d8ac66da546994b799c32acafc79b04d663493e132fa408516",
     "artifact_status": "published"
   },
   "quality": {
@@ -21,18 +21,34 @@
           "Qwen3.5-0.8B": {
             "miou": 0.7647967712584449,
             "iou_at_05": 0.8426727947675446,
-            "report_sha256": "573da7c037b95931b89cf5bd25f77d27d7c1a5995e2da54ddf9b1d76f636ae3c",
             "iou_sum": 4326.455335009023,
             "iou_at_05_count": 4767,
-            "reviews_sha256": "ff9e1b205fa294bfae130bbb61e42618e1cc066857bc7947527b43f16f19c0a6"
+            "valid_count": 5647,
+            "predictions_sha256": "3cc0bfdb19c973a18d51b766e6ba8a4736277a5335e30e1a47f6774fa7ed7b7a"
           },
-          "GroundingJev": {
-            "miou": 0.8131151002454875,
-            "iou_at_05": 0.9211596252430617,
-            "report_sha256": "fd53a88b123fb5e60381d01eeb592b800586696b2ba03678c2f476c6df99614f",
-            "iou_sum": 4599.792122088723,
-            "iou_at_05_count": 5211,
-            "reviews_sha256": "bdd4c939b6903cde3ff6dae2ba31b48731195238451685c130eb18560179e501"
+          "Jag": {
+            "miou": 0.8477960426367731,
+            "iou_at_05": 0.9390136114548348,
+            "iou_sum": 4795.9822131962255,
+            "iou_at_05_count": 5312,
+            "valid_count": 5657,
+            "predictions_sha256": "9ce8b67c07e1e87ac1c64ba4a821a279bf18347f28f00a347c776d7510c3b99d"
+          },
+          "NExT-Chat": {
+            "miou": 0.7504656472329582,
+            "iou_at_05": 0.8965882976842849,
+            "iou_sum": 4245.384166396844,
+            "iou_at_05_count": 5072,
+            "valid_count": 5657,
+            "predictions_sha256": "8615815e52885fc34dfc58984d5007c3d3702f5867154fc7f317cce683615f2b"
+          },
+          "LocateAnything": {
+            "miou": 0.8629797691101793,
+            "iou_at_05": 0.932296270107831,
+            "iou_sum": 4881.876553856284,
+            "iou_at_05_count": 5274,
+            "valid_count": 5656,
+            "predictions_sha256": "4c609c817c6e6f74f10b8082a5b52f181829bd8585649a9505c478e631b3d0fb"
           }
         }
       },
@@ -45,18 +61,34 @@
           "Qwen3.5-0.8B": {
             "miou": 0.6878004329866247,
             "iou_at_05": 0.7472031403336604,
-            "report_sha256": "bce6d99636a1f0a001924a36c94b1438071ce736d5ff66b74fec73996c59ca5d",
             "iou_sum": 3504.343206066853,
             "iou_at_05_count": 3807,
-            "reviews_sha256": "3b832f474d2596a680f6ed3ff8855e8b10318cdd1ce3dfe2c1b9a20c34ef1872"
+            "valid_count": 5053,
+            "predictions_sha256": "61d5d1cd5b66599491a58f0a7c56e5868e1294dd7d7bdb566632937e1b12ebc0"
           },
-          "GroundingJev": {
-            "miou": 0.748816544821646,
-            "iou_at_05": 0.8577036310107949,
-            "report_sha256": "800baee01e088cab93a89345a26bf14ae1fafaa1165ee45572a79c71179f4418",
-            "iou_sum": 3815.220295866286,
-            "iou_at_05_count": 4370,
-            "reviews_sha256": "3844332e44c3dbd336a024da830213fbf35f27dbb1c5e88db07872c816bfc472"
+          "Jag": {
+            "miou": 0.7845610143087881,
+            "iou_at_05": 0.8836113837095191,
+            "iou_sum": 3997.3383679032754,
+            "iou_at_05_count": 4502,
+            "valid_count": 5095,
+            "predictions_sha256": "f2f9274bc6ead8ef6b30ff49250bb2a3c0588816a307fa0432fb3feb77bf7e40"
+          },
+          "NExT-Chat": {
+            "miou": 0.6541915134114283,
+            "iou_at_05": 0.7703631010794897,
+            "iou_sum": 3333.1057608312276,
+            "iou_at_05_count": 3925,
+            "valid_count": 5095,
+            "predictions_sha256": "4fccdf66582aff3f31fda35da048c36b07bfc63c4585ef2b26c80fba06f133b7"
+          },
+          "LocateAnything": {
+            "miou": 0.8212466900288308,
+            "iou_at_05": 0.892639842983317,
+            "iou_sum": 4184.251885696893,
+            "iou_at_05_count": 4548,
+            "valid_count": 5094,
+            "predictions_sha256": "c0e29d2d8b05dcb929cac14f0108e7fa63d2a76bf734c7e7b8867544e0f85acc"
           }
         }
       },
@@ -69,18 +101,34 @@
           "Qwen3.5-0.8B": {
             "miou": 0.7015535957909903,
             "iou_at_05": 0.7652811735941321,
-            "report_sha256": "b7c9ccc12d435011d7ce78f27f5d67136c94e3b129170b319f3b4d2a4404d018",
             "iou_sum": 4017.0958894992104,
             "iou_at_05_count": 4382,
-            "reviews_sha256": "f38691ab1a7ba6f8fccb2272d3e63c9e963b0d6ada9521872771dc7c1a57a488"
+            "valid_count": 5706,
+            "predictions_sha256": "2e8d193620296f1970c915c1ec082172488688437be64cf2a93e57264b52a1d0"
           },
-          "GroundingJev": {
-            "miou": 0.7806069308710594,
-            "iou_at_05": 0.8835137967167307,
-            "report_sha256": "0bd947b3c1b73343ff5dd7d4df402d72e33f3ff74036d3c6ce6f360f83388832",
-            "iou_sum": 4469.755286167686,
-            "iou_at_05_count": 5059,
-            "reviews_sha256": "697b042a248e8dafd580effe441b03b17cbc71c929b939d7fe3f1ef96ecc2c1d"
+          "Jag": {
+            "miou": 0.820321308226103,
+            "iou_at_05": 0.9069158225637444,
+            "iou_sum": 4697.159810902666,
+            "iou_at_05_count": 5193,
+            "valid_count": 5726,
+            "predictions_sha256": "1aa2e2241815c789b6b4ba54c18cf6de1a4560958e4d3cb39c05a3663ca4f88f"
+          },
+          "NExT-Chat": {
+            "miou": 0.7058093468271291,
+            "iou_at_05": 0.8375829549423681,
+            "iou_sum": 4041.4643199321413,
+            "iou_at_05_count": 4796,
+            "valid_count": 5726,
+            "predictions_sha256": "c006a196c64a63995309e121492fbd7a702ccf10331443e5357401a678a11769"
+          },
+          "LocateAnything": {
+            "miou": 0.8188346559914502,
+            "iou_at_05": 0.8800209570380719,
+            "iou_sum": 4688.647240207044,
+            "iou_at_05_count": 5039,
+            "valid_count": 5721,
+            "predictions_sha256": "6f4e4b149282583ef9539374bb70c9fcefd21f9473a75103b201a840face66da"
           }
         }
       },
@@ -93,18 +141,34 @@
           "Qwen3.5-0.8B": {
             "miou": 0.5862349491059947,
             "iou_at_05": 0.6256903252198813,
-            "report_sha256": "e269fa6d0f8dc30ab40f44539b938fb3463f5ffd042cec3d1627f3b01ea20064",
-            "iou_sum": 2866.1026661792084,
+            "iou_sum": 2866.102666179208,
             "iou_at_05_count": 3059,
-            "reviews_sha256": "39a4a19aa78ce7ebf86ab4a42efc8736ad8e926bcc082f76b70182665c1e7f52"
+            "valid_count": 4798,
+            "predictions_sha256": "0af545b59b02772bca440d71d257b2e6c4dca055ceeb2b1e09c8de2369aac7d2"
           },
-          "GroundingJev": {
-            "miou": 0.6745639158934589,
-            "iou_at_05": 0.7633462875843731,
-            "report_sha256": "595622f453e2ed84d881f965d4b52fadc5588dc19e1eb2f9c4215ff9078fd17d",
-            "iou_sum": 3297.9429848031205,
-            "iou_at_05_count": 3732,
-            "reviews_sha256": "cb25941e9524bb05ca2327d566ba461a55f2885993be2cdfc87f204fb40ceb0c"
+          "Jag": {
+            "miou": 0.7215754982403931,
+            "iou_at_05": 0.800777255062385,
+            "iou_sum": 3527.782610897282,
+            "iou_at_05_count": 3915,
+            "valid_count": 4889,
+            "predictions_sha256": "dd61e55531610e02e7e8aabbdb57d330b51cd45a8c97f4a4330587b74477255f"
+          },
+          "NExT-Chat": {
+            "miou": 0.5731861812809151,
+            "iou_at_05": 0.6618940478625486,
+            "iou_sum": 2802.307240282394,
+            "iou_at_05_count": 3236,
+            "valid_count": 4889,
+            "predictions_sha256": "59ab79f812465f042af93009546686e4427640db0f143c6e94eb36563b7dcbb2"
+          },
+          "LocateAnything": {
+            "miou": 0.7426130949174308,
+            "iou_at_05": 0.7956637349151156,
+            "iou_sum": 3630.635421051319,
+            "iou_at_05_count": 3890,
+            "valid_count": 4886,
+            "predictions_sha256": "0d39c0daa7328debe76e112a7bd92719666f48c71ac0d008eceb77c904af25c9"
           }
         }
       },
@@ -117,61 +181,116 @@
           "Qwen3.5-0.8B": {
             "miou": 0.7151655673713049,
             "iou_at_05": 0.7796292439075193,
-            "report_sha256": "b9ef7d823b83c83f1084a1a008edace5662842977437a595286667ea2f507314",
             "iou_sum": 6867.01977789927,
             "iou_at_05_count": 7486,
-            "reviews_sha256": "a9ef052112ce5f72b12867261d935e8856108c91e1db5a169cd8e639f7e6f323"
+            "valid_count": 9524,
+            "predictions_sha256": "924d68cf468278d6e5c0bdae389cfb2f281f14fe781bae58b03c4ce2d786f2e2"
           },
-          "GroundingJev": {
-            "miou": 0.7497053079237097,
-            "iou_at_05": 0.8546136221620496,
-            "report_sha256": "10f0b9e566d610b51e07786165d11f18875e941f04416a7227a05aa1562c9ef7",
-            "iou_sum": 7198.670366683461,
-            "iou_at_05_count": 8206,
-            "reviews_sha256": "7f2fa9a79bac16ee25c3826bb9bba31e90c983695249ab25d1f7375d5d92e402"
+          "Jag": {
+            "miou": 0.7931589180582335,
+            "iou_at_05": 0.8772130806082066,
+            "iou_sum": 7615.911931195158,
+            "iou_at_05_count": 8423,
+            "valid_count": 9602,
+            "predictions_sha256": "53f5dda2aac61530ba075bfc96cf90ef0818bcf6c9ddd2ebf8b10fa3fe352204"
+          },
+          "NExT-Chat": {
+            "miou": 0.6668615367244516,
+            "iou_at_05": 0.792751510102062,
+            "iou_sum": 6403.204475628184,
+            "iou_at_05_count": 7612,
+            "valid_count": 9602,
+            "predictions_sha256": "686c05d56ef4a776c780bf57a88b8d089b6711b56df286515963fc4fc7d96c38"
+          },
+          "LocateAnything": {
+            "miou": 0.8243400569445098,
+            "iou_at_05": 0.8854405332222454,
+            "iou_sum": 7915.313226781183,
+            "iou_at_05_count": 8502,
+            "valid_count": 9598,
+            "predictions_sha256": "e714a988e2537887d52cc48c13a1144150e499539c4436c41a6cbfbd2aeccafd"
           }
         }
       }
-    ],
-    "aggregation": "Pool every testA and testB sample for RefCOCO and RefCOCO+; RefCOCOg uses test. Compute mIoU from IoU sums and IoU@0.5 from hit counts, retaining invalid predictions in the denominator."
+    ]
   },
   "efficiency": {
     "status": "complete",
     "kind": "isolated_prediction",
-    "dataset": "refcoco",
-    "split": "testA",
-    "samples": 256,
+    "dataset": "refcoco_family",
+    "split": "stratified_test_subset",
+    "samples": 250,
     "hardware": "NVIDIA A100-PCIE-40GB",
     "batch_size": 1,
     "warmup": 10,
     "models": {
-      "Qwen3.5-0.8B": {
-        "mean_ms": 1588.5275518303388,
-        "p50_ms": 1576.603973750025,
-        "p95_ms": 1721.6787575744092,
-        "samples_per_second": 0.6295137902063936
+      "Jag": {
+        "mean_ms": 65.97476003691554,
+        "p50_ms": 66.08746852725744,
+        "p95_ms": 68.81746370345354,
+        "samples_per_second": 15.157311666468505,
+        "peak_allocated_gib": 1.6802124977111816,
+        "peak_reserved_gib": 2.025390625,
+        "nvml_process_sampled_peak_gib": 2.5234375,
+        "weight_dtype": "bf16"
       },
-      "GroundingJev": {
-        "mean_ms": 184.46750605653506,
-        "p50_ms": 184.96021395549178,
-        "p95_ms": 192.39844474941492,
-        "samples_per_second": 5.4210089428623975
+      "Qwen3.5-0.8B": {
+        "mean_ms": 1293.0110861808062,
+        "p50_ms": 1275.5585629492998,
+        "p95_ms": 1496.6917634010315,
+        "samples_per_second": 0.7733885739168106,
+        "peak_allocated_gib": 1.6790871620178223,
+        "peak_reserved_gib": 1.74609375,
+        "nvml_process_sampled_peak_gib": 2.24609375,
+        "weight_dtype": "bf16"
+      },
+      "LocateAnything": {
+        "mean_ms": 239.04638022184372,
+        "p50_ms": 227.66177635639906,
+        "p95_ms": 384.76118352264166,
+        "samples_per_second": 4.183288611490221,
+        "peak_allocated_gib": 7.66438627243042,
+        "peak_reserved_gib": 9.16015625,
+        "nvml_process_sampled_peak_gib": 9.66015625,
+        "weight_dtype": "bf16"
+      },
+      "Hi-Token": {
+        "mean_ms": 616.9039172120392,
+        "p50_ms": 615.1918456889689,
+        "p95_ms": 635.546762496233,
+        "samples_per_second": 1.620997974075572,
+        "peak_allocated_gib": 7.182706356048584,
+        "peak_reserved_gib": 7.412109375,
+        "nvml_process_sampled_peak_gib": 7.91015625,
+        "weight_dtype": "bf16"
+      },
+      "NExT-Chat": {
+        "mean_ms": 120.00977098941803,
+        "p50_ms": 119.33030793443322,
+        "p95_ms": 141.00310113281012,
+        "samples_per_second": 8.332654847647163,
+        "peak_allocated_gib": 15.123932361602783,
+        "peak_reserved_gib": 15.48828125,
+        "nvml_process_sampled_peak_gib": 15.986328125,
+        "weight_dtype": "bf16"
       }
     },
-    "benchmark_sha256": "d8da6c6ddb98fccaef1120fdd2175903f015e9c5418acf22990e5f8d8197b4e8",
-    "conditions": "Same-GPU serial CUDA-synchronized prediction, image preparation included, model loading and warmup excluded. Base uses BF16 weights; GroundingJev uses FP32 weights with BF16 autocast.",
-    "speedup": 8.611422064455576,
-    "latency_reduction_percent": 88.38751610924297
+    "conditions": "Single-request end-to-end prediction with BF16 backbone weights; preprocessing included, model loading and warmup excluded. Peak memory is the sampled NVML process peak. Jag retains FP32 regression-head weights.",
+    "speedup": 19.598572021441445,
+    "benchmark_sha256": "aa87721989ba6b6bbf41875792054e00a32629c76a9bb485ed51ffe5a3c27c58"
   },
   "protocol": {
     "max_pixels": 262144,
     "max_length": 2048,
     "invalid_predictions": "zero IoU in the full denominator",
     "iou_at_05": "Fraction of samples with IoU >= 0.5",
-    "coordinates": "original-image normalized xyxy for scoring"
+    "coordinates": "original-image normalized xyxy for scoring",
+    "prompt_policy": "Original evaluated model-specific prompts; dataset expressions and scoring are shared.",
+    "quality_precision": "Jag: FP32 weights with BF16 autocast; Base, LocateAnything and NExT-Chat: BF16."
   },
   "links": {
     "base_model": "https://huggingface.co/Qwen/Qwen3.5-0.8B",
-    "source_repository": "https://github.com/xyzzzh/GroundingJev"
+    "source_repository": "https://github.com/xyzzzh/Jag",
+    "project_page": "https://xyzzzh.github.io/Jag/"
   }
 }

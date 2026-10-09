@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Two-stage GroundingJev training with the ModelScope ms-swift Trainer."""
+"""Two-stage Jag training with the ModelScope ms-swift Trainer."""
 
 import argparse
 import gc
@@ -34,8 +34,8 @@ def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--config", help="Complete training JSON; explicit CLI arguments override its training section")
     p.add_argument("--model", default="/models/Qwen3.5-0.8B")
-    p.add_argument("--train-jsonl", default="/workspace/datasets/RefCOCO/annotations/refcoco_80k_train.jsonl")
-    p.add_argument("--output-dir", default="/outputs/groundingjev")
+    p.add_argument("--train-jsonl", default="/workspace/datasets/RefCOCO/annotations/refcoco_train.jsonl")
+    p.add_argument("--output-dir", default="/outputs/jag")
     p.add_argument("--stage", choices=["all", "head", "joint"], default="all")
     p.add_argument("--init-checkpoint", help="Weights-only stage initialization; never restores an optimizer")
     p.add_argument("--resume-from-checkpoint", help="Exact stage checkpoint path, or auto")
@@ -43,9 +43,9 @@ def parser():
     p.add_argument("--effective-batch-size", type=int, default=96)
     p.add_argument("--head-steps", type=int, default=100)
     p.add_argument("--joint-epochs", type=float, default=2.0)
-    p.add_argument("--max-steps", type=int, default=-1, help="Joint-stage step cap for explicit short validation")
+    p.add_argument("--max-steps", type=int, default=6696, help="Joint-stage optimizer update budget")
     p.add_argument("--limit-samples", type=int, default=None, help="Explicit training subset for wiring checks only")
-    p.add_argument("--expected-samples", type=int, default=80000)
+    p.add_argument("--expected-samples", type=int, default=321327)
     p.add_argument("--max-pixels", type=int, default=262144)
     p.add_argument("--max-length", type=int, default=2048)
     p.add_argument("--workers", type=int, default=2)
@@ -55,7 +55,7 @@ def parser():
     p.add_argument("--use-cpu", action="store_true")
     p.add_argument("--swanlab", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--calibration-path")
-    p.add_argument("--run-name", default="GroundingJev")
+    p.add_argument("--run-name", default="Jag")
     p.add_argument("--recipe-file", help="Optional optimizer/schedule JSON overriding the config recipe")
     return p
 
@@ -251,7 +251,7 @@ def run(args):
             raise ValueError("Requested stage does not match the resumable checkpoint")
     session = MonitoringSession(
         output_dir=args.output_dir, run_config=config, enabled=args.swanlab,
-        project="GroundingJev", experiment_name=args.run_name,
+        project="Jag", experiment_name=args.run_name,
         calibration_path=args.calibration_path,
     )
     try:
