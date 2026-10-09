@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#102f4f"/><path d="M15 25V15h10m14 0h10v10M15 39v10h10m14 0h10V39" fill="none" stroke="#a9d8f6" stroke-width="3"/><path d="M24 37c0 11 15 11 15 0V23H28" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><linearGradient id="jag-blue" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#084B91"/><stop offset="1" stop-color="#04A4FF"/></linearGradient></defs>
+  <rect width="64" height="64" rx="14" fill="white"/>
+  <text x="32" y="48" text-anchor="middle" font-family="Times New Roman, Times, serif" font-weight="700" font-size="53" fill="url(#jag-blue)">J</text>
+</svg>

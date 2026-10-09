@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Jag adapts a compact multimodal model for direct box prediction. Accurate visual grounding in one forward pass, with lower single-request latency than the compared grounding models.">
-  <meta name="theme-color" content="#102f4f">
+  <meta name="theme-color" content="#084B91">
   <link rel="canonical" href="https://xyzzzh.github.io/Jag/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://xyzzzh.github.io/Jag/">
@@ -17,19 +17,16 @@
   <meta name="twitter:image" content="https://xyzzzh.github.io/Jag/assets/framework.png">
   <title>Jag | Direct Box Prediction for Efficient Visual Grounding</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
+  <header class="site-header" data-header>
     <div class="nav-shell">
-      <a class="brand" href="#top" aria-label="Jag home"><span class="brand-mark" aria-hidden="true">J</span>Jag<span class="brand-description">Visual Grounding</span></a>
+      <a class="brand" href="#top" aria-label="Jag home"><span class="brand-wordmark">Jag</span><span class="brand-description">Direct Box Prediction</span></a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Toggle navigation</span><span></span><span></span><span></span></button>
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#method">Method</a><a href="#results">Results</a><a href="#efficiency">Efficiency</a><a href="#examples">Examples</a><a href="#resources">Resources</a><a href="#contact">Contact</a>
+        <a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#efficiency">Efficiency</a><a href="#examples">Examples</a><a href="#resources">Resources</a><a href="#contact">Contact</a>
         <a class="nav-code" href="https://github.com/xyzzzh/Jag" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -38,9 +35,10 @@
   <main id="main">
     <section class="hero" id="top">
       <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
       <div class="container hero-content">
-        <p class="eyebrow">A Jev-inspired approach to visual grounding</p>
-        <h1><span>Jag</span><br>Direct Box Prediction for<br class="desktop-break"> Efficient Visual Grounding</h1>
+        <h1><span class="title-accent">Jag:</span> Direct Box Prediction for Efficient Visual Grounding</h1>
         <p class="hero-lead">Adapt multimodal representations to geometry.<br>Predict the complete bounding box in one forward pass.</p>
         <div class="authors" aria-label="Authors">
           <span>Xiuyuan Zhu<sup>1,2</sup></span><span>Ke Lu<sup>1,3</sup></span><span>Hao Wu<sup>1,2</sup></span><span>Zijin Du<sup>1</sup></span><span>Dongming Zhang<sup>2</sup></span><span>Jian Xue<sup>1,*</sup></span>
@@ -51,6 +49,7 @@
           <a class="button button-secondary" href="https://huggingface.co/xyzzzh/Jag" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg>Model weights</a>
           <a class="button button-secondary" href="https://huggingface.co/spaces/xyzzzh/Jag" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8Z"/></svg>Live demo</a>
           <a class="button button-quiet" href="#citation">BibTeX <span aria-hidden="true">↓</span></a>
+          <a class="button button-contact" href="#contact"><span aria-hidden="true">@</span>Contact</a>
         </div>
         <div class="hero-stats" aria-label="Measured single-request inference results">
           <div><strong>0.8<span>B</span></strong><span>Multimodal backbone</span></div>
@@ -64,14 +63,14 @@
 
     <section class="section abstract-section" id="abstract">
       <div class="container narrow">
-        <div class="section-heading centered"><span class="section-index">01 / OVERVIEW</span><h2>A geometric answer,<br>a direct prediction.</h2></div>
+        <div class="section-heading centered"><span class="section-index">01</span><h2>Abstract</h2></div>
         <p class="abstract-copy">Visual grounding requires an image, a referring expression, and a bounding box. Autoregressive multimodal models often express that box as a sequence of coordinate tokens, adding decoding steps to the image–language computation. <strong>Jag learns to predict the box directly from the model’s existing input representations.</strong> A lightweight regression head reads the last valid input-token state and returns all four continuous box values together. Geometric losses adapt both the multimodal representations and their mapping to coordinates. The resulting model improves over its base model across all five evaluated test splits, with competitive accuracy and lower single-request latency than the compared specialized grounding models.</p>
       </div>
     </section>
 
     <section class="section method-section" id="method">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">02 / METHOD</span><h2>Retain understanding.<br>Learn the box.</h2></div><p>Jag keeps the pretrained image–language computation and adapts it for continuous localization, without generating coordinate text.</p></div>
+        <div class="section-heading split-heading light-heading"><div><span class="section-index">02</span><h2>Method</h2></div><p>Jag keeps the pretrained image–language computation and adapts it for continuous localization, without generating coordinate text.</p></div>
         <figure class="paper-figure framework-figure">
           <a class="figure-zoom" href="assets/framework.png" target="_blank" rel="noopener" aria-label="Open the Jag framework at full resolution"><img src="assets/framework.png" width="2880" height="1620" alt="Jag replaces sequential coordinate decoding with direct continuous box prediction from the last valid input-token state. L1 and GIoU losses train the regression head and adapt the multimodal representations, improving grounding accuracy and inference efficiency."></a>
           <figcaption>Jag adapts multimodal representations for direct box prediction. Geometric supervision turns an existing input state into a complete bounding box in one forward pass, combining accurate grounding with efficient inference. <a href="assets/framework.png" target="_blank" rel="noopener">View full size ↗</a></figcaption>
@@ -86,7 +85,7 @@
 
     <section class="section results-section" id="results">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">03 / GROUNDING ACCURACY</span><h2>Compact model.<br>Competitive localization.</h2></div><p>Jag improves over Base and NExT-Chat on every evaluated split and achieves the highest accuracy on three of the five splits in this comparison.</p></div>
+        <div class="section-heading split-heading"><div><span class="section-index">03</span><h2>Grounding Accuracy</h2></div><p>Jag improves over Base and NExT-Chat on every evaluated split and achieves the highest accuracy on three of the five splits in this comparison.</p></div>
         <div class="table-card">
           <div class="table-title"><strong>Referring expression comprehension</strong><span>Acc@0.5 (%) ↑</span></div>
           <div class="table-scroll" tabindex="0" role="region" aria-label="Grounding accuracy across five test splits">
@@ -108,7 +107,7 @@
 
     <section class="section efficiency-section" id="efficiency">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">04 / INFERENCE EFFICIENCY</span><h2>Less time to the box.</h2></div><p>Direct regression returns all four coordinates after one multimodal forward pass. No subsequent coordinate generation is required.</p></div>
+        <div class="section-heading split-heading"><div><span class="section-index">04</span><h2>Inference Efficiency</h2></div><p>Direct regression returns all four coordinates after one multimodal forward pass. No subsequent coordinate generation is required.</p></div>
         <div class="efficiency-layout">
           <figure class="paper-figure cost-figure"><a class="figure-zoom" href="assets/inference-cost.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="assets/inference-cost.png" width="976" height="884" loading="lazy" alt="Latency versus peak GPU memory: Jag is the lowest-latency model at 65.97 milliseconds and uses 2.52 GiB, less memory than NExT-Chat, LocateAnything, and Hi-Token. Base uses slightly less memory than Jag."></a><figcaption>Jag achieves the lowest measured latency. The shaded region contains combinations with both higher latency and higher memory use than Jag.</figcaption></figure>
           <div class="cost-data"><div class="table-card"><div class="table-title"><strong>Single-request inference</strong><span>Batch size 1</span></div><div class="table-scroll" tabindex="0" role="region" aria-label="Single-request latency, GPU memory, and Jag speedup"><table class="cost-table"><thead><tr><th scope="col">Model</th><th scope="col">Latency <small>ms ↓</small></th><th scope="col">Memory <small>GiB ↓</small></th><th scope="col">Jag speedup</th></tr></thead><tbody>
@@ -124,21 +123,21 @@
 
     <section class="section analysis-section" id="analysis">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">05 / ADAPTATION</span><h2>The representations<br>matter, too.</h2></div><p>Jointly adapting the language backbone, visual merger, and regression head improves localization over fitting the head alone. Alternative readouts and training schedules remain competitive.</p></div>
+        <div class="section-heading split-heading"><div><span class="section-index">05</span><h2>Ablation Studies</h2></div><p>Jointly adapting the language backbone, visual merger, and regression head improves localization over fitting the head alone. Alternative readouts and training schedules remain competitive.</p></div>
         <figure class="paper-figure"><a class="figure-zoom" href="assets/component-ablation.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="assets/component-ablation.png" width="1978" height="676" loading="lazy" alt="Component ablations comparing joint adaptation, head-only training, readout positions, and training schedules using Acc@0.5."></a><figcaption>Component ablations examine the effect of representation adaptation, the readout, and the training schedule. Dashed lines mark the autoregressive reference.</figcaption></figure>
       </div>
     </section>
 
     <section class="section examples-section" id="examples">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">06 / QUALITATIVE RESULTS</span><h2>From expressions<br>to image regions.</h2></div><p>Examples from RefCOCOg compare Jag and Base against the annotated region, including shared successes and cases where either model fails.</p></div>
+        <div class="section-heading split-heading"><div><span class="section-index">06</span><h2>Qualitative Results</h2></div><p>Examples from RefCOCOg compare Jag and Base against the annotated region, including shared successes and cases where either model fails.</p></div>
         <figure class="paper-figure"><a class="figure-zoom" href="assets/qualitative-cases.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="assets/qualitative-cases.png" width="2055" height="1035" loading="lazy" alt="Four RefCOCOg examples: both models correctly localize a table; only Jag correctly localizes an elephant with its trunk up; only Base correctly localizes an airplane; both models fail on an expanse of table above a bowl."></a><figcaption>Green: annotated box. Blue: Jag. Dashed gray: Base. Each expression refers to one target region.</figcaption></figure>
       </div>
     </section>
 
     <section class="section resources-section" id="resources">
       <div class="container">
-        <div class="section-heading split-heading"><div><span class="section-index">07 / OPEN RESOURCES</span><h2>Try Jag.</h2></div><p>Explore the model, run the demo, or reproduce training and evaluation with the Docker environment.</p></div>
+        <div class="section-heading split-heading"><div><span class="section-index">07</span><h2>Resources</h2></div><p>Explore the model, run the demo, or reproduce training and evaluation with the Docker environment.</p></div>
         <div class="resource-grid">
           <a class="resource-card" href="https://huggingface.co/spaces/xyzzzh/Jag" target="_blank" rel="noopener"><span class="resource-symbol" aria-hidden="true">▷</span><h3>Interactive demo <span aria-hidden="true">↗</span></h3><p>Upload an image and describe the object to predict its bounding box.</p><small>Hugging Face Spaces</small></a>
           <a class="resource-card" href="https://huggingface.co/xyzzzh/Jag" target="_blank" rel="noopener"><span class="resource-symbol" aria-hidden="true">↓</span><h3>Model weights <span aria-hidden="true">↗</span></h3><p>Download the model and find the instructions for local inference.</p><small>Hugging Face</small></a>
@@ -149,8 +148,8 @@
     </section>
 
     <section class="section citation-section" id="citation">
-      <div class="container narrow"><div class="section-heading centered"><span class="section-index">08 / CITATION</span><h2>Build on this work.</h2><p>If you use Jag, you can cite the project:</p></div>
-        <div class="citation-box"><button class="copy-button" type="button" data-copy="bibtex" data-copy-name="BibTeX"><span aria-hidden="true">⧉</span> <span data-copy-label>Copy BibTeX</span></button><pre id="bibtex"><code>@misc{zhu2026jag,
+      <div class="container narrow"><div class="section-heading centered"><span class="section-index">08</span><h2>Citation</h2><p>If you use Jag, you can cite the project:</p></div>
+        <div class="citation-box"><button class="copy-button" type="button" data-copy="bibtex" data-copy-name="BibTeX" data-copy-button><span aria-hidden="true">⧉</span> <span data-copy-label>Copy BibTeX</span></button><pre id="bibtex"><code>@misc{zhu2026jag,
   title  = {Jag: Direct Box Prediction for Efficient Visual Grounding},
   author = {Zhu, Xiuyuan and Lu, Ke and Wu, Hao and Du, Zijin
             and Zhang, Dongming and Xue, Jian},
@@ -161,11 +160,11 @@
     </section>
     <section class="section contact-section" id="contact">
       <div class="container narrow">
-        <div class="section-heading centered"><span class="section-index">09 / CONTACT</span><h2>Contact</h2><p>For questions about the paper, code, or model, please contact us by email.</p></div>
+        <div class="section-heading centered"><span class="section-index">09</span><h2>Contact</h2><p>For questions about the paper, code, or model, please contact us by email.</p></div>
         <div class="contact-address">
           <span class="contact-address-icon" aria-hidden="true">@</span>
           <div class="contact-address-copy"><small>Email</small><a id="contact-email" href="mailto:zhuxiuyuan22@mails.ucas.edu.cn">zhuxiuyuan22@mails.ucas.edu.cn</a></div>
-          <button class="contact-copy-button" type="button" data-copy="contact-email" data-copy-name="Email" aria-label="Copy email address"><span aria-hidden="true">⧉</span> <span data-copy-label>Copy</span></button>
+          <button class="contact-copy-button" type="button" data-copy="contact-email" data-copy-name="Email" data-copy-contact data-email="zhuxiuyuan22@mails.ucas.edu.cn" aria-label="Copy email address"><span aria-hidden="true">⧉</span> <span data-copy-label data-contact-copy-label>Copy</span></button>
           <span class="copy-status sr-only" role="status" aria-live="polite"></span>
         </div>
       </div>
