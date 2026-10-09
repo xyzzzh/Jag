@@ -10,11 +10,11 @@
   <meta property="og:url" content="https://xyzzzh.github.io/Jag/">
   <meta property="og:title" content="Jag: Direct Box Prediction for Efficient Visual Grounding">
   <meta property="og:description" content="Continuous box prediction from a compact multimodal model. One forward pass, competitive grounding accuracy, and efficient inference.">
-  <meta property="og:image" content="https://xyzzzh.github.io/Jag/assets/inference-cost.png">
+  <meta property="og:image" content="https://xyzzzh.github.io/Jag/assets/framework.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jag: Direct Box Prediction for Efficient Visual Grounding">
   <meta name="twitter:description" content="A compact multimodal model for accurate and efficient direct box prediction.">
-  <meta name="twitter:image" content="https://xyzzzh.github.io/Jag/assets/inference-cost.png">
+  <meta name="twitter:image" content="https://xyzzzh.github.io/Jag/assets/framework.png">
   <title>Jag | Direct Box Prediction for Efficient Visual Grounding</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
       <a class="brand" href="#top" aria-label="Jag home"><span class="brand-mark" aria-hidden="true">J</span>Jag<span class="brand-description">Visual Grounding</span></a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Toggle navigation</span><span></span><span></span><span></span></button>
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#method">Method</a><a href="#results">Results</a><a href="#efficiency">Efficiency</a><a href="#examples">Examples</a><a href="#resources">Resources</a>
+        <a href="#method">Method</a><a href="#results">Results</a><a href="#efficiency">Efficiency</a><a href="#examples">Examples</a><a href="#resources">Resources</a><a href="#contact">Contact</a>
         <a class="nav-code" href="https://github.com/xyzzzh/Jag" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -66,21 +66,16 @@
       <div class="container narrow">
         <div class="section-heading centered"><span class="section-index">01 / OVERVIEW</span><h2>A geometric answer,<br>a direct prediction.</h2></div>
         <p class="abstract-copy">Visual grounding requires an image, a referring expression, and a bounding box. Autoregressive multimodal models often express that box as a sequence of coordinate tokens, adding decoding steps to the image–language computation. <strong>Jag learns to predict the box directly from the model’s existing input representations.</strong> A lightweight regression head reads the last valid input-token state and returns all four continuous box values together. Geometric losses adapt both the multimodal representations and their mapping to coordinates. The resulting model improves over its base model across all five evaluated test splits, with competitive accuracy and lower single-request latency than the compared specialized grounding models.</p>
-        <p class="inspiration">Inspired by <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener">Jev</a> and its use of fixed, task-specific outputs.</p>
       </div>
     </section>
 
     <section class="section method-section" id="method">
       <div class="container">
         <div class="section-heading split-heading"><div><span class="section-index">02 / METHOD</span><h2>Retain understanding.<br>Learn the box.</h2></div><p>Jag keeps the pretrained image–language computation and adapts it for continuous localization, without generating coordinate text.</p></div>
-        <div class="method-flow" role="img" aria-label="An image and referring expression enter a compact multimodal backbone. The last valid input state feeds an MLP, which predicts the four normalized box values in one forward pass.">
-          <div class="flow-input"><span class="flow-kicker">INPUT</span><strong>Image + expression</strong><span>“elephant with trunk up”</span></div>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <div class="flow-backbone"><span class="flow-kicker">MULTIMODAL REPRESENTATIONS</span><strong>Vision → merger → language</strong><span>Last valid input-token state</span></div>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <div class="flow-output"><span class="flow-kicker">DIRECT REGRESSION</span><strong>Lightweight MLP</strong><span class="box-coordinates">c<sub>x</sub><i>·</i>c<sub>y</sub><i>·</i>w<i>·</i>h</span></div>
-          <div class="flow-footer"><span class="forward-icon" aria-hidden="true">↳</span> One multimodal forward pass. One complete box.</div>
-        </div>
+        <figure class="paper-figure framework-figure">
+          <a class="figure-zoom" href="assets/framework.png" target="_blank" rel="noopener" aria-label="Open the Jag framework at full resolution"><img src="assets/framework.png" width="2880" height="1620" alt="Jag replaces sequential coordinate decoding with direct continuous box prediction from the last valid input-token state. L1 and GIoU losses train the regression head and adapt the multimodal representations, improving grounding accuracy and inference efficiency."></a>
+          <figcaption>Jag adapts multimodal representations for direct box prediction. Geometric supervision turns an existing input state into a complete bounding box in one forward pass, combining accurate grounding with efficient inference. <a href="assets/framework.png" target="_blank" rel="noopener">View full size ↗</a></figcaption>
+        </figure>
         <div class="method-notes">
           <article><span class="note-index">A</span><h3>Read the input state</h3><p>The readout follows the full image and referring expression, so the box prediction reuses their multimodal representation.</p></article>
           <article><span class="note-index">B</span><h3>Supervise the geometry</h3><p>L1 and GIoU losses train continuous box centers and dimensions, connecting the output directly to coordinate error and region overlap.</p></article>
@@ -155,18 +150,28 @@
 
     <section class="section citation-section" id="citation">
       <div class="container narrow"><div class="section-heading centered"><span class="section-index">08 / CITATION</span><h2>Build on this work.</h2><p>If you use Jag, you can cite the project:</p></div>
-        <div class="citation-box"><button class="copy-button" type="button" data-copy="bibtex"><span aria-hidden="true">⧉</span> <span data-copy-label>Copy BibTeX</span></button><pre id="bibtex"><code>@misc{zhu2026jag,
+        <div class="citation-box"><button class="copy-button" type="button" data-copy="bibtex" data-copy-name="BibTeX"><span aria-hidden="true">⧉</span> <span data-copy-label>Copy BibTeX</span></button><pre id="bibtex"><code>@misc{zhu2026jag,
   title  = {Jag: Direct Box Prediction for Efficient Visual Grounding},
   author = {Zhu, Xiuyuan and Lu, Ke and Wu, Hao and Du, Zijin
             and Zhang, Dongming and Xue, Jian},
   year   = {2026},
   url    = {https://github.com/xyzzzh/Jag}
 }</code></pre><span class="copy-status sr-only" role="status" aria-live="polite"></span></div>
-        <p class="contact">Questions or feedback? <a href="https://github.com/xyzzzh/Jag/issues" target="_blank" rel="noopener">Open an issue</a> or contact <a href="mailto:xuejian@ucas.ac.cn">Jian Xue</a>.</p>
+      </div>
+    </section>
+    <section class="section contact-section" id="contact">
+      <div class="container narrow">
+        <div class="section-heading centered"><span class="section-index">09 / CONTACT</span><h2>Contact</h2><p>For questions about the paper, code, or model, please contact us by email.</p></div>
+        <div class="contact-address">
+          <span class="contact-address-icon" aria-hidden="true">@</span>
+          <div class="contact-address-copy"><small>Email</small><a id="contact-email" href="mailto:zhuxiuyuan22@mails.ucas.edu.cn">zhuxiuyuan22@mails.ucas.edu.cn</a></div>
+          <button class="contact-copy-button" type="button" data-copy="contact-email" data-copy-name="Email" aria-label="Copy email address"><span aria-hidden="true">⧉</span> <span data-copy-label>Copy</span></button>
+          <span class="copy-status sr-only" role="status" aria-live="polite"></span>
+        </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><div><a class="footer-brand" href="#top">Jag</a><p>Direct Box Prediction for Efficient Visual Grounding</p></div><div class="footer-links"><a href="https://github.com/xyzzzh/Jag" target="_blank" rel="noopener">Code</a><a href="https://huggingface.co/xyzzzh/Jag" target="_blank" rel="noopener">Model</a><a href="https://huggingface.co/spaces/xyzzzh/Jag" target="_blank" rel="noopener">Demo</a><a href="https://xyzzzh.github.io/IoU-PD/" target="_blank" rel="noopener">IoU-PD</a><a href="https://xyzzzh.github.io/Hi-Token/" target="_blank" rel="noopener">Hi-Token</a></div></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><div><a class="footer-brand" href="#top">Jag</a><p>Direct Box Prediction for Efficient Visual Grounding</p></div><div class="footer-links"><a href="https://github.com/xyzzzh/Jag" target="_blank" rel="noopener">Code</a><a href="https://huggingface.co/xyzzzh/Jag" target="_blank" rel="noopener">Model</a><a href="https://huggingface.co/spaces/xyzzzh/Jag" target="_blank" rel="noopener">Demo</a><a href="https://xyzzzh.github.io/IoU-PD/" target="_blank" rel="noopener">IoU-PD</a><a href="https://xyzzzh.github.io/Hi-Token/" target="_blank" rel="noopener">Hi-Token</a><a href="#contact">Contact</a></div></div></footer>
   <script src="script.js"></script>
 </body>
 </html>
