@@ -12,6 +12,9 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
       PYTHONDONTWRITEBYTECODE: "1"
+      # The mapped host UID need not exist in the container's passwd database.
+      USER: jag
+      LOGNAME: jag
       PYTHONPATH: /workspace/Jag
       TOKENIZERS_PARALLELISM: "false"
       CUDA_DEVICE_ORDER: PCI_BUS_ID
