@@ -5,6 +5,7 @@ license: apache-2.0
 base_model: Qwen/Qwen3.5-0.8B
 library_name: transformers
 tags:
+  - arxiv:2610.13239
   - visual-grounding
   - referring-expression-comprehension
   - qwen3.5
@@ -14,7 +15,7 @@ tags:
 
 # Jag: Direct Box Prediction for Efficient Visual Grounding
 
-[Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
+[Paper](https://arxiv.org/abs/2610.13239) · [PDF](https://arxiv.org/pdf/2610.13239) · [Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
 
 Jag adapts Qwen3.5-0.8B for visual grounding through continuous box prediction. A lightweight MLP reads the last valid input-token state and predicts a complete bounding box in one multimodal forward pass, without coordinate-token generation. The approach is inspired by Jev's use of task-specific outputs.
 
@@ -76,6 +77,22 @@ Jag uses 321,327 referring-expression training examples. Training first adapts t
 ## Intended use
 
 Jag localizes one object described by an English expression in an image. It returns a bounding box rather than a segmentation mask or a list of detections. Its reported evaluation covers the RefCOCO, RefCOCO+, and RefCOCOg benchmarks.
+
+## Citation
+
+If you use Jag in your research, please cite:
+
+```bibtex
+@misc{zhu2026jag,
+  title={Jag: Direct Box Prediction for Efficient Visual Grounding},
+  author={Xiuyuan Zhu and Ke Lu and Hao Wu and Zijin Du and Dongming Zhang and Jian Xue},
+  year={2026},
+  eprint={2610.13239},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2610.13239}
+}
+```
 
 ## License and acknowledgments
 

@@ -19,6 +19,7 @@ dependencies = [
 docs = ["matplotlib==3.11.2"]
 
 [project.urls]
+Paper = "https://arxiv.org/abs/2610.13239"
 Repository = "https://github.com/xyzzzh/Jag"
 Model = "https://huggingface.co/xyzzzh/Jag"
 Demo = "https://huggingface.co/spaces/xyzzzh/Jag"

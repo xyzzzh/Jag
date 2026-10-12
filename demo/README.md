@@ -22,4 +22,18 @@ Model: [xyzzzh/Jag](https://huggingface.co/xyzzzh/Jag).
 
 To deploy, upload the contents of this directory to a Gradio Space and select **ZeroGPU** hardware. The app downloads the pinned model revision automatically. No access token or training dependencies are needed.
 
-[Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Model](https://huggingface.co/xyzzzh/Jag)
+[Paper](https://arxiv.org/abs/2610.13239) · [PDF](https://arxiv.org/pdf/2610.13239) · [Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Model](https://huggingface.co/xyzzzh/Jag)
+
+## Citation
+
+```bibtex
+@misc{zhu2026jag,
+  title={Jag: Direct Box Prediction for Efficient Visual Grounding},
+  author={Xiuyuan Zhu and Ke Lu and Hao Wu and Zijin Du and Dongming Zhang and Jian Xue},
+  year={2026},
+  eprint={2610.13239},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2610.13239}
+}
+```

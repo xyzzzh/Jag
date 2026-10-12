@@ -4,7 +4,7 @@
 
 **Direct Box Prediction for Efficient Visual Grounding**
 
-[项目主页](https://xyzzzh.github.io/Jag/) · [模型](https://huggingface.co/xyzzzh/Jag) · [在线体验](https://huggingface.co/spaces/xyzzzh/Jag)
+[论文](https://arxiv.org/abs/2610.13239) · [PDF](https://arxiv.org/pdf/2610.13239) · [项目主页](https://xyzzzh.github.io/Jag/) · [模型](https://huggingface.co/xyzzzh/Jag) · [在线体验](https://huggingface.co/spaces/xyzzzh/Jag)
 
 [English](README.md) · [简体中文](README_zh.md)
 
@@ -113,7 +113,7 @@ bash scripts/benchmark.sh
 
 ## 引用
 
-引用信息见[英文文档](README.md#citation)。
+论文见 [arXiv:2610.13239](https://arxiv.org/abs/2610.13239)，BibTeX 引用信息见[英文文档](README.md#citation)。
 
 ## 许可证与致谢
 

@@ -4,7 +4,7 @@
 
 **Direct Box Prediction for Efficient Visual Grounding**
 
-[Project page](https://xyzzzh.github.io/Jag/) · [Model](https://huggingface.co/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
+[arXiv](https://arxiv.org/abs/2610.13239) · [PDF](https://arxiv.org/pdf/2610.13239) · [Project page](https://xyzzzh.github.io/Jag/) · [Model](https://huggingface.co/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
 
 [English](README.md) · [简体中文](README_zh.md)
 
@@ -115,10 +115,13 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bibtex
 @misc{zhu2026jag,
-  title = {Jag: Direct Box Prediction for Efficient Visual Grounding},
-  author = {Zhu, Xiuyuan and Lu, Ke and Wu, Hao and Du, Zijin and Zhang, Dongming and Xue, Jian},
-  year = {2026},
-  url = {https://xyzzzh.github.io/Jag/}
+  title={Jag: Direct Box Prediction for Efficient Visual Grounding},
+  author={Xiuyuan Zhu and Ke Lu and Hao Wu and Zijin Du and Dongming Zhang and Jian Xue},
+  year={2026},
+  eprint={2610.13239},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2610.13239}
 }
 ```
 
