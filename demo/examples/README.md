@@ -1,6 +1,6 @@
 # Example images
 
-The example photographs are from MS COCO 2014; the referring expressions are from RefCOCOg. The original image licenses and attribution terms apply.
+The example photographs are from MS COCO 2014; the referring expressions are from the RefCOCOg test split. The original image licenses and attribution terms apply.
 
 | Image ID | Original image |
 | --- | --- |

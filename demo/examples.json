@@ -2,31 +2,49 @@
   {
     "image": "examples/COCO_train2014_000000380440.jpg",
     "expression": "the man in yellow coat",
-    "label": "Skier in yellow"
+    "label": "Skier in yellow",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_0"
   },
   {
     "image": "examples/COCO_train2014_000000380440.jpg",
     "expression": "a skier in a blue jacket",
-    "label": "Skier in blue"
+    "label": "Skier in blue",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_4369"
   },
   {
     "image": "examples/COCO_train2014_000000419645.jpg",
     "expression": "a shiny red vintage pickup truck",
-    "label": "Red pickup truck"
+    "label": "Red pickup truck",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_3"
   },
   {
     "image": "examples/COCO_train2014_000000191005.jpg",
     "expression": "giraffe holding head highest",
-    "label": "Tallest giraffe"
+    "label": "Tallest giraffe",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_156"
   },
   {
     "image": "examples/COCO_train2014_000000191005.jpg",
     "expression": "first giraffe on the left who is looking towards the right",
-    "label": "Giraffe on the left"
+    "label": "Giraffe on the left",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_5311"
   },
   {
     "image": "examples/COCO_train2014_000000430563.jpg",
     "expression": "the cat on its back",
-    "label": "Cat lying on its back"
+    "label": "Cat lying on its back",
+    "dataset": "RefCOCOg",
+    "split": "test",
+    "sample_id": "refcocog_test_6357"
   }
 ]
