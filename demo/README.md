@@ -18,6 +18,8 @@ short_description: Direct box prediction for efficient visual grounding.
 
 Jag predicts a continuous bounding box in one forward pass through a compact multimodal model. The demo accepts an image and an English referring expression, and visualizes the predicted box.
 
+Click one of the six examples to run a prediction, or upload your own image and enter an English object description. Examples include different targets in the same image, visual attributes, and spatial descriptions.
+
 Model: [xyzzzh/Jag](https://huggingface.co/xyzzzh/Jag).
 
 To deploy, upload the contents of this directory to a Gradio Space and select **ZeroGPU** hardware. The app downloads the pinned model revision automatically. No access token or training dependencies are needed.

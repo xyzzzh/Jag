@@ -1,5 +1,9 @@
 # Environment setup / 环境配置
 
+For inference on your own image, see the lightweight [inference setup](inference.md). The Docker environment below supports training and evaluation.
+
+对自有图片推理可使用轻量[推理环境](inference.md)；以下 Docker 环境用于训练与评估。
+
 Install Docker Compose and NVIDIA Container Toolkit, then prepare the images and annotations using [data preparation](data.md).
 
 安装 Docker Compose 和 NVIDIA Container Toolkit，并按[数据准备](data.md)准备图像与标注。

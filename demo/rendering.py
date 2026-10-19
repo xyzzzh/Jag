@@ -21,5 +21,5 @@ def predict_and_draw(predictor, image_path, expression):
         canvas = source.convert("RGB")
     draw = ImageDraw.Draw(canvas)
     width = max(3, round(min(canvas.size) / 160))
-    draw.rectangle(box, outline="#B5532C", width=width)
+    draw.rectangle(box, outline="#04A4FF", width=width)
     return canvas

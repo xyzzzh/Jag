@@ -14,6 +14,7 @@ from transformers import AutoProcessor
 from .data import GroundingCollator
 from .batching import prepare_batch
 from .geometry import cxcywh_to_xyxy
+from .hub import resolve_model_directory
 from .model import JagModel
 
 
@@ -79,7 +80,7 @@ class GroundingPredictor:
                         weight_dtype="fp32", **kwargs):
         if weight_dtype not in {"fp32", "bf16"}:
             raise ValueError("weight_dtype must be 'fp32' or 'bf16'")
-        checkpoint = Path(checkpoint)
+        checkpoint = resolve_model_directory(checkpoint)
         model, info = JagModel.from_pretrained(
             checkpoint, local_files_only=True, dtype=torch.float32, output_loading_info=True)
         issues = {key: info.get(key) for key in
@@ -146,7 +147,8 @@ class GroundingPredictor:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--checkpoint", required=True)
+    parser.add_argument("--checkpoint", required=True,
+                        help="Saved model directory or Hugging Face model ID, e.g. xyzzzh/Jag")
     parser.add_argument("--image", required=True)
     parser.add_argument("--expression", required=True)
     parser.add_argument("--processor")

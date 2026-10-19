@@ -17,31 +17,30 @@ tags:
 
 [Paper](https://arxiv.org/abs/2610.13239) · [PDF](https://arxiv.org/pdf/2610.13239) · [Project page](https://xyzzzh.github.io/Jag/) · [Code](https://github.com/xyzzzh/Jag) · [Demo](https://huggingface.co/spaces/xyzzzh/Jag)
 
-Jag adapts Qwen3.5-0.8B for visual grounding through continuous box prediction. A lightweight MLP reads the last valid input-token state and predicts a complete bounding box in one multimodal forward pass, without coordinate-token generation. The approach is inspired by Jev's use of task-specific outputs.
+Jag adapts Qwen3.5-0.8B for visual grounding through continuous box prediction. A lightweight MLP reads the last valid input-token state and predicts a complete bounding box in one multimodal forward pass, without coordinate-token generation.
 
 This repository provides the model weights used in the Jag paper, together with the image processor, tokenizer, and inference code. The model outputs one normalized `cxcywh` box for an image and an English referring expression. The prediction script also returns pixel coordinates in the original image.
 
 ## Quick start
 
-Use Python 3.12. The complete model is included; inference does not require a separate base-model download.
+Use Python 3.12 to run Jag on any image:
 
 ```bash
+git clone https://github.com/xyzzzh/Jag.git
+cd Jag
 python3.12 -m venv .venv
 source .venv/bin/activate
-python -m pip install huggingface-hub
-python -c "from huggingface_hub import snapshot_download; snapshot_download('xyzzzh/Jag', local_dir='Jag')"
-cd Jag
-python -m pip install -e .
-
+python -m pip install -r requirements-inference.txt
 python -m jag.predict \
-  --checkpoint . \
+  --checkpoint xyzzzh/Jag \
   --image /path/to/image.jpg \
   --expression 'the person wearing a red shirt' \
-  --device cuda \
-  --weight-dtype bf16
+  --device cuda --weight-dtype bf16
 ```
 
-The `bbox_xyxy` field contains `[x1, y1, x2, y2]` in original-image pixels. Add `--output prediction.json` to save the result. The `bf16` option stores the backbone in BF16 and keeps the regression head in FP32; use `--weight-dtype fp32` for the full-test accuracy configuration.
+The complete model downloads automatically on first use; no training data or separate base model is required. A local model directory is also accepted by `--checkpoint`. The `bbox_xyxy` field contains `[x1, y1, x2, y2]` in original-image pixels. Add `--output prediction.json` to save it.
+
+The `bf16` option stores the backbone in BF16 and keeps the regression head in FP32; use `--weight-dtype fp32` for the full-test accuracy configuration. You can also try the [online demo](https://huggingface.co/spaces/xyzzzh/Jag).
 
 ## Grounding accuracy
 
@@ -96,4 +95,4 @@ If you use Jag in your research, please cite:
 
 ## License and acknowledgments
 
-See [LICENSE](https://github.com/xyzzzh/Jag/blob/main/LICENSE). Jag builds on [Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) and is inspired by [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev). We thank the authors of Qwen, ModelScope ms-swift, EvalScope, SwanLab, COCO, and the RefCOCO benchmarks. Datasets and third-party software retain their respective licenses.
+See [LICENSE](https://github.com/xyzzzh/Jag/blob/main/LICENSE). Jag builds on [Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B). We thank the authors of Qwen, ModelScope ms-swift, EvalScope, SwanLab, COCO, and the RefCOCO benchmarks. Datasets and third-party software retain their respective licenses.

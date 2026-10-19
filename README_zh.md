@@ -14,7 +14,7 @@
 
 ## 简介
 
-Jag 是一个直接预测连续边界框的紧凑多模态模型。受 [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) 启发，Jag 保留 Qwen3.5-0.8B 的图像与语言处理能力，用直接几何预测替代自回归坐标生成。
+Jag 是一个直接预测连续边界框的紧凑多模态模型。Jag 保留 Qwen3.5-0.8B 的图像与语言处理能力，用直接几何预测替代自回归坐标生成。
 
 轻量 MLP 读取最后一个有效输入 token 的表征，一次前向预测归一化 `cxcywh` 坐标。训练使用 L1 和 GIoU 损失，先适配回归头，再联合微调语言主干、视觉 merger 和回归头，其余视觉编码器保持冻结。
 
@@ -53,17 +53,34 @@ Jag 在五个测试划分上均超过 Base，并在三个划分上取得所比�
 
 ## 快速开始
 
-安装 Docker Compose 和 NVIDIA Container Toolkit，然后克隆仓库：
+直接使用[在线 Demo](https://huggingface.co/spaces/xyzzzh/Jag)，或通过 Python 3.12 对自己的图片进行推理：
 
 ```bash
 git clone https://github.com/xyzzzh/Jag.git
 cd Jag
-cp .env.example .env
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-inference.txt
+python -m jag.predict \
+  --checkpoint xyzzzh/Jag \
+  --image /path/to/image.jpg \
+  --expression 'the person wearing a red shirt' \
+  --device cuda --weight-dtype bf16
 ```
+
+首次运行自动下载已发布模型，无需训练数据或单独下载基础模型。JSON 字段 `bbox_xyxy` 返回原图像素坐标下的 `[x1, y1, x2, y2]`；添加 `--output prediction.json` 可保存结果。`--checkpoint` 也可指定本地模型目录。详见[推理说明](docs/inference.md)。
+
+## 训练与评估
 
 ### 1. 准备数据与环境
 
-下载并解压 [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip)，将 `.env` 中的 `REFCOCO_IMAGES_DIR` 设置为解压后的 `train2014` 文件夹，并准备 RefCOCO 标注压缩包：
+安装 Docker Compose 和 NVIDIA Container Toolkit，然后复制环境配置模板：
+
+```bash
+cp .env.example .env
+```
+
+下载并解压 [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip)，将 `.env` 中的 `REFCOCO_IMAGES_DIR` 设置为解压后的 `train2014` 文件夹，再准备 RefCOCO 标注压缩包并下载基础模型：
 
 ```bash
 python3 scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
@@ -71,35 +88,23 @@ bash scripts/docker.sh build
 bash scripts/docker.sh run --rm jag python scripts/download_model.py
 ```
 
-最后一条命令下载基础模型。训练使用 `refcoco_train.jsonl`，评估使用[数据说明](docs/data.md)中的五个测试划分。
+训练使用 `refcoco_train.jsonl`，评估使用[数据说明](docs/data.md)中的五个测试划分。
 
-### 2. 使用模型
-
-下载已发布的权重并预测边界框：
-
-```bash
-bash scripts/docker.sh --eval run --rm jag \
-  hf download xyzzzh/Jag --local-dir /models/Jag
-bash scripts/infer.sh \
-  --image /workspace/datasets/RefCOCO/train2014/your_image.jpg \
-  --expression 'the person wearing a red shirt' --weight-dtype bf16
-```
-
-输出包含原始图像像素坐标下的边界框，也可直接使用[在线 Demo](https://huggingface.co/spaces/xyzzzh/Jag)。
-
-### 3. 训练
+### 2. 训练
 
 ```bash
 bash scripts/train.sh
 ```
 
-若 `models/Jag` 已存在，添加 `--export-output /models/Jag-trained` 导出到另一目录。
+[训练配置](configs/train/jag.json)使用合并的 RefCOCO 系列训练数据，完成后将模型导出到 `models/Jag`。若该目录已存在，添加 `--export-output /models/Jag-trained`。如需 SwanLab，设置 `SWANLAB_API_KEY` 并添加 `--swanlab`。详见[训练说明](docs/training.md)。
 
-[训练配置](configs/train/jag.json)使用合并的 RefCOCO 系列训练数据，训练结束后将模型导出到 `models/Jag`。如需 SwanLab，设置 `SWANLAB_API_KEY` 并添加 `--swanlab`。详见[训练说明](docs/training.md)。
+### 3. 评估
 
-### 4. 评估
+如需跳过训练并评估已发布模型，先下载至 `models/Jag`：
 
 ```bash
+bash scripts/docker.sh --eval run --rm jag \
+  hf download xyzzzh/Jag --local-dir /models/Jag
 bash scripts/evaluate.sh jag
 bash scripts/evaluate.sh base
 bash scripts/benchmark.sh
@@ -117,4 +122,4 @@ bash scripts/benchmark.sh
 
 ## 许可证与致谢
 
-代码采用 [Apache 2.0](LICENSE)，模型权重和数据集遵循各自许可证。感谢 [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)、[Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B)、[ms-swift](https://github.com/modelscope/ms-swift)、[EvalScope](https://github.com/modelscope/evalscope)、[SwanLab](https://github.com/SwanHubX/SwanLab) 和 [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) 作者。
+代码采用 [Apache 2.0](LICENSE)，模型权重和数据集遵循各自许可证。感谢 [Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B)、[ms-swift](https://github.com/modelscope/ms-swift)、[EvalScope](https://github.com/modelscope/evalscope)、[SwanLab](https://github.com/SwanHubX/SwanLab) 和 [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) 作者。

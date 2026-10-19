@@ -5,9 +5,8 @@ Project source code is licensed under Apache-2.0.
 Model weights, external libraries, and datasets retain their respective licenses.
 
 Jag builds on Qwen3.5, ModelScope ms-swift, EvalScope, and SwanLab.
-The direct structured-output approach is inspired by TypeSafe AI's introduction of Jev.
 We acknowledge the COCO and RefCOCO dataset authors.
 
 项目源码采用 Apache-2.0 许可证。
 模型权重、外部依赖和数据集保留各自的许可证。
-感谢 Qwen3.5、ModelScope ms-swift、EvalScope、SwanLab、TypeSafe Jev 及 COCO/RefCOCO 作者。
+感谢 Qwen3.5、ModelScope ms-swift、EvalScope、SwanLab 及 COCO/RefCOCO 作者。

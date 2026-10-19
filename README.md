@@ -14,7 +14,7 @@
 
 ## Introduction
 
-Jag adapts a compact multimodal model for continuous bounding-box prediction. Inspired by [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), it returns the geometric answer directly, retaining the image–language processing of Qwen3.5-0.8B while removing autoregressive coordinate generation.
+Jag adapts a compact multimodal model for continuous bounding-box prediction. It returns the geometric answer directly, retaining the image–language processing of Qwen3.5-0.8B while removing autoregressive coordinate generation.
 
 A lightweight MLP reads the last valid input-token representation and predicts normalized `cxcywh` coordinates in one forward pass. L1 and GIoU losses supervise head adaptation followed by joint training of the language backbone, visual merger, and regression head. The remaining vision encoder stays frozen.
 
@@ -53,17 +53,34 @@ See the [evaluation protocol](docs/evaluation.md) and [model card](MODEL_CARD.md
 
 ## Quick start
 
-Install Docker Compose and NVIDIA Container Toolkit, then clone the repository:
+Try the [online demo](https://huggingface.co/spaces/xyzzzh/Jag), or run Jag on your own image with Python 3.12:
 
 ```bash
 git clone https://github.com/xyzzzh/Jag.git
 cd Jag
-cp .env.example .env
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-inference.txt
+python -m jag.predict \
+  --checkpoint xyzzzh/Jag \
+  --image /path/to/image.jpg \
+  --expression 'the person wearing a red shirt' \
+  --device cuda --weight-dtype bf16
 ```
+
+The published model downloads automatically on first use. No training data or separate base-model download is needed. The JSON field `bbox_xyxy` contains `[x1, y1, x2, y2]` in original-image pixels; add `--output prediction.json` to save it. A local model directory is also accepted by `--checkpoint`. See [inference](docs/inference.md).
+
+## Training and evaluation
 
 ### 1. Prepare data and the environment
 
-Download and extract [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip). Set `REFCOCO_IMAGES_DIR` in `.env` to the extracted `train2014` folder, then prepare the RefCOCO annotation archive:
+Install Docker Compose and NVIDIA Container Toolkit, then copy the environment template:
+
+```bash
+cp .env.example .env
+```
+
+Download and extract [train2014.zip](https://huggingface.co/datasets/omlab/VLM-R1/blob/main/train2014.zip). Set `REFCOCO_IMAGES_DIR` in `.env` to the extracted `train2014` folder, then prepare the RefCOCO annotation archive and download the base model:
 
 ```bash
 python3 scripts/prepare_data.py --archive /path/to/refcoco.zip --output data/refcoco
@@ -71,35 +88,23 @@ bash scripts/docker.sh build
 bash scripts/docker.sh run --rm jag python scripts/download_model.py
 ```
 
-The last command downloads the base model. Training uses `refcoco_train.jsonl`; evaluation uses the five test splits listed in the [data guide](docs/data.md).
+Training uses `refcoco_train.jsonl`; evaluation uses the five test splits listed in the [data guide](docs/data.md).
 
-### 2. Run the model
-
-Download the published weights and predict a box:
-
-```bash
-bash scripts/docker.sh --eval run --rm jag \
-  hf download xyzzzh/Jag --local-dir /models/Jag
-bash scripts/infer.sh \
-  --image /workspace/datasets/RefCOCO/train2014/your_image.jpg \
-  --expression 'the person wearing a red shirt' --weight-dtype bf16
-```
-
-The result contains the bounding box in original-image pixels. You can also try the [online demo](https://huggingface.co/spaces/xyzzzh/Jag).
-
-### 3. Train
+### 2. Train
 
 ```bash
 bash scripts/train.sh
 ```
 
-If `models/Jag` already exists, choose another export directory with `--export-output /models/Jag-trained`.
+The [training recipe](configs/train/jag.json) trains on the combined RefCOCO-family training data and exports the completed model to `models/Jag`. If that directory already exists, use `--export-output /models/Jag-trained`. For SwanLab, set `SWANLAB_API_KEY` and add `--swanlab`. See [training](docs/training.md).
 
-The [training recipe](configs/train/jag.json) trains on the combined RefCOCO-family training data and exports the completed model to `models/Jag`. For SwanLab, set `SWANLAB_API_KEY` and add `--swanlab`. See [training](docs/training.md).
+### 3. Evaluate
 
-### 4. Evaluate
+To evaluate the published model without training, download it into `models/Jag`:
 
 ```bash
+bash scripts/docker.sh --eval run --rm jag \
+  hf download xyzzzh/Jag --local-dir /models/Jag
 bash scripts/evaluate.sh jag
 bash scripts/evaluate.sh base
 bash scripts/benchmark.sh
@@ -127,4 +132,4 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License and acknowledgments
 
-Code uses [Apache 2.0](LICENSE). Model weights and datasets retain their respective licenses. We thank [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), [Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B), [ms-swift](https://github.com/modelscope/ms-swift), [EvalScope](https://github.com/modelscope/evalscope), [SwanLab](https://github.com/SwanHubX/SwanLab), and the [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) authors.
+Code uses [Apache 2.0](LICENSE). Model weights and datasets retain their respective licenses. We thank [Qwen](https://huggingface.co/Qwen/Qwen3.5-0.8B), [ms-swift](https://github.com/modelscope/ms-swift), [EvalScope](https://github.com/modelscope/evalscope), [SwanLab](https://github.com/SwanHubX/SwanLab), and the [COCO](https://cocodataset.org/)/[RefCOCO](https://github.com/lichengunc/refer) authors.

@@ -1,0 +1,32 @@
+[
+  {
+    "image": "examples/COCO_train2014_000000380440.jpg",
+    "expression": "the man in yellow coat",
+    "label": "Skier in yellow"
+  },
+  {
+    "image": "examples/COCO_train2014_000000380440.jpg",
+    "expression": "a skier in a blue jacket",
+    "label": "Skier in blue"
+  },
+  {
+    "image": "examples/COCO_train2014_000000419645.jpg",
+    "expression": "a shiny red vintage pickup truck",
+    "label": "Red pickup truck"
+  },
+  {
+    "image": "examples/COCO_train2014_000000191005.jpg",
+    "expression": "giraffe holding head highest",
+    "label": "Tallest giraffe"
+  },
+  {
+    "image": "examples/COCO_train2014_000000191005.jpg",
+    "expression": "first giraffe on the left who is looking towards the right",
+    "label": "Giraffe on the left"
+  },
+  {
+    "image": "examples/COCO_train2014_000000430563.jpg",
+    "expression": "the cat on its back",
+    "label": "Cat lying on its back"
+  }
+]
