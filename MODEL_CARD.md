@@ -67,7 +67,7 @@ Single-request measurements with BF16 backbone weights:
 | Hi-Token | 616.90 | 1.62 | 7.91 | 9.35× |
 | **Jag** | **65.97** | **15.16** | 2.52 | — |
 
-Latency covers image loading, preprocessing, model prediction, and output conversion, excluding model loading and warmup. Memory is the sampled peak GPU process usage. See the [evaluation documentation](https://github.com/xyzzzh/Jag/tree/main/evaluation) for measurement settings and complete results.
+Latency covers image loading, preprocessing, model prediction, and output conversion, excluding model loading and warmup. Memory is the sampled peak GPU process usage. See the [evaluation documentation](https://github.com/xyzzzh/Jag/blob/main/docs/evaluation.md) for measurement settings.
 
 ## Training
 

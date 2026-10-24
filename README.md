@@ -32,7 +32,7 @@ Accuracy at IoU ≥ 0.5 (%). RefCOCO and RefCOCO+ pool testA and testB by sample
 | LocateAnything | **91.35** | 84.12 | **88.54** |
 | **Jag** | 91.28 | **85.80** | 87.72 |
 
-Jag improves over Base across all five test splits and leads the compared models on three splits. See the [per-split results](evaluation/README.md).
+Jag improves over Base across all five test splits and leads the compared models on three splits. See the [per-split results](MODEL_CARD.md#grounding-accuracy).
 
 Single-request end-to-end inference:
 

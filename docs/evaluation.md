@@ -32,6 +32,6 @@ Full-test quality evaluation uses Jag's FP32 weights with BF16 autocast. The rel
 
 完整测试集上的质量评估使用 Jag 的 FP32 权重与 BF16 自动混合精度。发布模型沿用训练时的提示词；对比模型使用各自评测时的提示词与图像处理器，所报告结果比较的是完整模型。
 
-Complete results and their data are in [evaluation/README.md](../evaluation/README.md) and [results.json](../evaluation/results.json).
+Per-split accuracy and single-request inference results are summarized in the [model card](../MODEL_CARD.md#grounding-accuracy).
 
-完整结果与数据见 [evaluation/README.md](../evaluation/README.md) 和 [results.json](../evaluation/results.json)。
+各测试划分的准确率和单请求推理结果见[模型卡](../MODEL_CARD.md#grounding-accuracy)。

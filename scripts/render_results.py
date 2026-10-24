@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the public tables and figure from evaluation/results.json."""
+"""Render the public tables and figure from a supplied results JSON file."""
 
 import argparse
 import json
@@ -283,8 +283,7 @@ def figure(result, root):
         if extension == "svg":
             target.write_text("\n".join(line.rstrip() for line in target.read_text().splitlines()) + "\n")
     plt.close(fig)
-    source = root / "evaluation/figure-source-values.csv"
-    source.parent.mkdir(exist_ok=True)
+    source = output / "figure-source-values.csv"
     with source.open("w", newline="") as stream:
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["dataset", "split", "samples", "model", "miou", "iou_at_05", "latency_ms", "samples_per_second"])
@@ -301,11 +300,12 @@ def figure(result, root):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Render figures from the public evaluation values")
+    parser = argparse.ArgumentParser(description="Render figures from a supplied results JSON file")
+    parser.add_argument("--results", type=Path, required=True, help="Results JSON file to render")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
     root = args.root.resolve()
-    result = json.loads((root / "evaluation/results.json").read_text(encoding="utf-8"))
+    result = json.loads(args.results.read_text(encoding="utf-8"))
     figure(result, root)
 
 

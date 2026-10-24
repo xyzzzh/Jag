@@ -32,7 +32,7 @@ IoU ≥ 0.5 时的准确率（%）。RefCOCO 和 RefCOCO+ 按样本数合并 tes
 | LocateAnything | **91.35** | 84.12 | **88.54** |
 | **Jag** | 91.28 | **85.80** | 87.72 |
 
-Jag 在五个测试划分上均超过 Base，并在三个划分上取得所比较模型中的最高准确率。详见[分划分结果](evaluation/README.md)。
+Jag 在五个测试划分上均超过 Base，并在三个划分上取得所比较模型中的最高准确率。详见[分划分结果](MODEL_CARD.md#grounding-accuracy)。
 
 单请求端到端推理：
 
