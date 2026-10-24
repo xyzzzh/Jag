@@ -14,9 +14,9 @@ Quality evaluation covers RefCOCO testA/testB, RefCOCO+ testA/testB, and RefCOCO
 
 质量评估覆盖 RefCOCO testA/testB、RefCOCO+ testA/testB 与 RefCOCOg test。质量报告保存在 `outputs/evaluation`，性能结果保存在 `outputs/benchmark`。
 
-The benchmark reconstructs the recorded workload from [cost-selection.json](../data/cost-selection.json) and measures Base and Jag in sequence. It uses BF16 backbone weights, an FP32 regression head for Jag, and separate warmup examples. The original annotations are required; the selection file contains row indices only.
+The benchmark samples shared test inputs and separate warmup examples from the annotations, then measures Base and Jag in sequence. It uses BF16 backbone weights and an FP32 regression head for Jag. The selected row indices are saved with the benchmark outputs.
 
-成本测试根据 [cost-selection.json](../data/cost-selection.json) 重建所测输入，依次测量 Base 和 Jag，使用 BF16 主干权重，Jag 回归头保持 FP32，并使用单独的预热样本。运行时需要原始标注；选择文件仅保存行号。
+成本测试从标注中抽取共同的测试输入和独立的预热样本，再依次测量 Base 和 Jag，使用 BF16 主干权重，Jag 回归头保持 FP32。所选样本的行号随测试结果保存。
 
 - **mIoU**: Mean box intersection over union / 平均框交并比。
 - **IoU@0.5**: Fraction of expressions with IoU ≥ 0.5 / IoU 不低于 0.5 的描述比例。
